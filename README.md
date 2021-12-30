@@ -1,6 +1,6 @@
 # scarfer
 
-__SCAn __RE__port file __R__eporter
+**SCAn** **RE**port file **R**eporter
 
 # Introduction
 
