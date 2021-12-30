@@ -1,6 +1,6 @@
 # scarfer
 
-**SCA**n **RE**port file **R**eporter
+**SCA**n **R**eport **F**il**E** **R**eporter
 
 # Introduction
 
