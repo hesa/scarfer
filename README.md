@@ -27,6 +27,8 @@ Scarfer can filter (include) files based on:
 
 * license name (`-ff`) using Python's regular expressions
 
+*Note: if you're using more than one filter then filters are AND:ed together*
+
 # Example use
 
 Output the file names (full path) of all the files in the Scancode report `example-data/cairo-1.16.0-scan.json`:
