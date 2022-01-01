@@ -49,9 +49,9 @@ Output the file names (full path) of all the files in the Scancode report `examp
 $ scarfer example-data/cairo-1.16.0-scan.json -lf mpl -ff drm -c -l 
 ```
 
-To filter in all files containing "pdi" and ending with ".c":
+To filter in all files containing "/pdi" and ending with ".c":
 ```
-$ scarfer example-data/cairo-1.16.0-scan.json -ff ".*pdi.*\.c$"
+$ scarfer example-data/cairo-1.16.0-scan.json -ff "/.*pdi.*\.c$"
 ```
 
 
