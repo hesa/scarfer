@@ -23,9 +23,9 @@ Scarfer can output the following information per file:
 
 Scarfer can filter (include) files based on:
 
-* license name (`-lf`)
+* license name (`-lf`) using Python's regular expressions
 
-* license name (`-ff`)
+* license name (`-ff`) using Python's regular expressions
 
 # Example use
 
@@ -47,6 +47,11 @@ $ scarfer example-data/cairo-1.16.0-scan.json -lf gpl-3
 Output the file names (full path) of all the files in the Scancode report `example-data/cairo-1.16.0-scan.json` with a license matching `mpl` and files with path matching `drm`. The output should also contain information (per file) about license and copyright:
 ```
 $ scarfer example-data/cairo-1.16.0-scan.json -lf mpl -ff drm -c -l 
+```
+
+To filter in all files containing "pdi" and ending with ".c":
+```
+$ scarfer example-data/cairo-1.16.0-scan.json -ff ".*pdi.*\.c$"
 ```
 
 
