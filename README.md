@@ -6,8 +6,8 @@ Source code scan report file reporter
 
 Scarfer outputs compliance related information from a scan report.
 
-A scan report contain lots of information, Scancode has
-37 entries on the top level for each file, about a file and it is
+A scan report contain lots of information, for example Scancode has 37
+entries on the top level for each file, about a file and it is
 sometimes cumbersome to open with an editor to extract the information
 wanted. Scarfer provides a quick command line access to scan reports.
 
@@ -26,7 +26,6 @@ Scarfer can filter (include) files based on:
 * license name (`-lf`)
 
 * license name (`-ff`)
-
 
 # Example use
 
