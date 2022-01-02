@@ -13,10 +13,12 @@ from scarfer.scan_interface import ScanReportReader
 from scarfer.scan_interface import ScanReportException
 from scarfer.format.interface import Settings
 from scarfer.filter_utils import create_filters
+from scarfer.config import scarfer_version
+from scarfer.config import scarfer_name
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
-PROGRAM_NAME = "scarfer"
+PROGRAM_NAME = scarfer_name
 PROGRAM_DESCRIPTION = "Source code scan report file reporter reads scan reports and outputs selected information about filtered files"
 PROGRAM_URL = "https://github.com/hesa/scarfer"
 PROGRAM_EXAMPLES = "   Coming soon."
@@ -91,11 +93,12 @@ def parse():
                             help='output result in specified format, default is ' + OUTPUT_FORMAT_TEXT,
                             default=OUTPUT_FORMAT_TEXT)
 
+    parser.add_argument('--version', '-V', action='version', version="{name}: {version}".format(name=scarfer_name, version=scarfer_version))
+
     parser.add_argument('-v', '--verbose',
                             action='store_true',
                             help='output verbose information to stderr',
                             default=False)
-
     args = parser.parse_args()
 
     return args
