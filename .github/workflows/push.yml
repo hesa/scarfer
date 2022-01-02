@@ -27,11 +27,11 @@ jobs:
       run: python3 setup.py install
     - name: Test
       run: |
+        PYTHONPATH=. python3 -m unittest
+        python3 setup.py install .
         scarfer --help
         scarfer -h
         #scarfer --version
-        PYTHONPATH=. python3 -m unittest
-        JUNIT_REPORT=1 ./all.sh
       shell: bash
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v2
