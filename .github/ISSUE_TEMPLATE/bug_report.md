@@ -27,7 +27,7 @@ First of all, thank you for your bug report. Please fill out below sections (if 
 
  | tool    | version    | how to get it       |
  | ------- | ---------- | ------------------- |
- | flict   | !!enter here!! | `flict --version`   |
+ | scarfer   | !!enter here!! | `scarfer --version`   |
  | python3 | !!enter here!! | `python3 --version` |
  | os      | !!enter here!! | n.a.                |
 
