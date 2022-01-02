@@ -1,9 +1,12 @@
 from enum import Enum
 import re
+from license_expression import Licensing, LicenseSymbol
+
+from scarfer.format.factory import FormatFactory
+#from format import FormatInterface
 
 
-#
-# RESULT
+# expected result from read(), from the implementing classes
 # ----------------------
 # files: [
 #   {
@@ -19,6 +22,18 @@ import re
 #       ]
 #     }
 #  ]
+
+#
+# what to expect from report() - as a user
+#
+# {
+#   "files": (see above)
+#   "meta": {}
+#   "cumulative": {
+#     "license": "simplified license of all the combined"
+#     "copytights": "combined copyrights"
+#   }
+
 
 class ScanReportFilterOperator(Enum):
     AND = 1
@@ -47,10 +62,8 @@ class ScanReportFilter:
 
             
 class ScanReportReader:
-    def __init__(self, file_name, filters=[], operator = ScanReportFilterOperator.AND):
+    def __init__(self, file_name):
         self.file_name = file_name
-        self.filters = filters
-        self.operator = operator
 
     def _apply_filter_file(self, filt, f):
         if filt.type == ScanReportFilterType.FILE:
@@ -63,11 +76,11 @@ class ScanReportReader:
         else:
             raise(ScanReportException("Unsupported filter type. This is weird."))
             
-    def _apply_filters_file(self, f):
+    def _apply_filters_file(self, f, filters):
         # If no filters, True means show all
         ret = True
         
-        for filt in self.filters:
+        for filt in filters:
             filter_ret = self._apply_filter_file(filt, f)
             if self.operator == ScanReportFilterOperator.AND:
                 ret  = ret and filter_ret
@@ -78,45 +91,55 @@ class ScanReportReader:
 
         return ret
         
-    def apply_filters(self):
+    def apply_filters(self, filters=[], operator = ScanReportFilterOperator.AND):
+        self.operator = operator
+        
         keep_data = []
         for f in self.data:
-            if not self._apply_filters_file(f):
-                #print("remove file: " + f['path'] + ": " + str(len(self.data)))
-                #self.data.remove(f)
-                #print(str(len(self.data)))
+            if not self._apply_filters_file(f, filters):
                 pass
             else:
                 keep_data.append(f)
-                print("keep   file: " + f['path'] + ": " + str(len(keep_data)))
 
-        self.kept_data = keep_data
+        licenses = set()
+        for f in keep_data:
+            for lic in f['license']['expressions']:
+                licenses.add(lic)
+
+        license_string = " and ".join(licenses)
+        licensing = Licensing()
+        parsed = licensing.parse(license_string)
+
+        report_data = {}
+        report_data['files'] = keep_data
+        report_data['meta'] = {}
+        report_data['cumulative'] = {}
+        report_data['cumulative']['license'] = parsed
+                
+        self.report_data = report_data
     
     def read(self):
         clazzes = [ FakeReportReader, FakeReportReader, ScancodeReportReader ]
         self.data = None
         for clazz in clazzes:
-            print("trying: " + str(clazz))
             try:
                 self.data = clazz(self.file_name).read()
                 break
-            except:
-                print("pass...")
+            except Exception as e:
                 pass
         if self.data == None:
             raise(ScanReportException("File not in a supported format"))
 
-        print("size: " + str(len(self.data)))
-        self.apply_filters()
-        print("size: " + str(len(self.kept_data)))
-
-        return self.kept_data
+    def report(self):
+        if self.report_data == None:
+            self.apply_filters([])
+        return self.report_data
 
     def __str__(self):
         ret = ["path: {name}".format(name=self.file_name)]
-        ret.append("operator: {operator}".format(operator=self.operator))
-        for f in self.filters:
-            ret.append("  {filter}".format(filter=f))
+#        ret.append("operator: {operator}".format(operator=self.operator))
+#        for f in filters:
+#            ret.append("  {filter}".format(filter=f))
         return '\n'.join(ret)
             
 class ScanReportException(Exception):
@@ -134,25 +157,27 @@ class ScancodeReportReader(ScanReportReader):
 
     def check_file_format(self):
         headers = self.json_data['headers'][0]
-        print(str(headers))
+        #print(str(headers))
         tool = headers['tool_name']
-        print("tool: " + str(tool))
+        #print("tool: " + str(tool))
         if tool.lower() != "scancode-toolkit":
+            print("Uh oh...")
             raise(ScanReportException("File not in Scancode format"))
-        
+        #print("OK")
     
     def read(self):
         with open(self.file_name) as fp:
             import json
-            print("slakj 1")
             self.json_data = json.load(fp)
-            print("slakj 2")
             self.check_file_format()
-            print("slakj 3")
-            self.files = json_data['files']
+            self.files = self.json_data['files']
 
         files = []
         for f in self.files:
+            
+            if not f['type'] == "file":
+                continue
+            
             _file = {}
             
             # path
@@ -180,42 +205,3 @@ class ScancodeReportReader(ScanReportReader):
             files.append(_file)
         return files
 
-# 
-# test code
-#
-        
-def main():
-    print("begin...")
-
-    reader = ScancodeReportReader("apa.txt")
-    print("reader:   " + str(reader))
-
-    filter_type = ScanReportFilterType.FILE
-    print("type:   " + str(filter_type))
-    
-    file_filter = ScanReportFilter("cairo-xcb")
-    print("filter:   " + str(file_filter))
-    
-    license_filter = ScanReportFilter("x11", ScanReportFilterType.LICENSE)
-    print("filter:   " + str(file_filter))
-    
-    reader = ScanReportReader("example-data/cairo-1.16.0-scan.json", [file_filter, license_filter])
-    print("reader:   " + str(reader))
-
-    files = reader.read()
-    
-    print("data:   ")
-    for f in files:
-        print(" * " + f['path'] + ": " + str(f['license']['expressions']))
-
-    print("end...")
-
-if __name__ == '__main__':
-    main()
-
-
-#    TODO
-#
-# - calculate concluded license
-# - simplify license expression
-# - formats for printout
