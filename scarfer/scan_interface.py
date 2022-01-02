@@ -129,12 +129,15 @@ class ScanReportReader:
                 pass
         if self.data == None:
             raise(ScanReportException("File not in a supported format"))
-
+        
     def report(self):
         if self.report_data == None:
             self.apply_filters([])
         return self.report_data
 
+    def raw_report(self):
+        return self.data
+    
     def __str__(self):
         ret = ["path: {name}".format(name=self.file_name)]
 #        ret.append("operator: {operator}".format(operator=self.operator))
