@@ -77,38 +77,65 @@ class ScanReportReader:
         else:
             raise(ScanReportException("Unsupported filter type. This is weird."))
             
-    def _apply_filters_file(self, f, filters, operator):
 
-        if operator == ScanReportFilterOperator.AND:
-            ret  = True
-        elif operator == ScanReportFilterOperator.OR:
-            ret  = False
-        else:
-            raise(ScanReportException("Unsupported operator. This is weird."))
-
+    def _apply_filters_file(self, f, filters, filter_on_files):
+        
         if len(filters) == 0:
             return True
         
+        ret  = False
+        
         for filt in filters:
-            filter_ret = self._apply_filter_file(filt, f)
-            if operator == ScanReportFilterOperator.AND:
-                ret  = ret and filter_ret
-            elif operator == ScanReportFilterOperator.OR:
-                ret  = ret or filter_ret
-        return ret
-        
-    def apply_filters(self, filters=[], operator = ScanReportFilterOperator.AND):
-        self.operator = operator
-        
-        keep_data = []
-        for f in self.data:
-            if not self._apply_filters_file(f, filters, ScanReportFilterOperator.OR):
-                pass
+            if filter_on_files:
+                if filt.type == ScanReportFilterType.FILE:
+                    ret = ret or self._apply_filter_file(filt, f)
+                    
             else:
-                keep_data.append(f)
+                if filt.type == ScanReportFilterType.LICENSE:
+                    ret = ret or self._apply_filter_file(filt, f)
 
+        return ret
+
+    def _generic_filter_count(self, filters, filter_type):
+        count = 0
+        for filt in filters:
+            if filt.type == filter_type:
+                count += 1
+        return count
+        
+    def _file_filter_count(self, filters):
+        return self._generic_filter_count(filters, ScanReportFilterType.FILE)
+    
+    def _license_filter_count(self, filters):
+        return self._generic_filter_count(filters, ScanReportFilterType.LICENSE)
+    
+    def apply_filters(self, filters=[]):
+
+        # filter on files
+        if self._file_filter_count(filters) > 0:
+            keep_data = []
+            for f in self.data:
+                #print("f: " + str(f['path']))
+                if not self._apply_filters_file(f, filters, True):
+                    pass
+                else:
+                    keep_data.append(f)
+        else:
+            keep_data = self.data
+            
+        # filter on licenses
+        if self._license_filter_count(filters) > 0:
+            ret_data = []
+            for f in keep_data:
+                if not self._apply_filters_file(f, filters, False):
+                    pass
+                else:
+                    ret_data.append(f)
+        else:
+            ret_data = keep_data
+                    
         licenses = set()
-        for f in keep_data:
+        for f in ret_data:
             for lic in f['license']['expressions']:
                 licenses.add(lic)
 
@@ -117,7 +144,7 @@ class ScanReportReader:
         parsed = licensing.parse(license_string)
 
         report_data = {}
-        report_data['files'] = keep_data
+        report_data['files'] = ret_data
         report_data['meta'] = {}
         report_data['cumulative'] = {}
         report_data['cumulative']['license'] = parsed
