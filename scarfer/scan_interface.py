@@ -85,6 +85,9 @@ class ScanReportReader:
             ret  = False
         else:
             raise(ScanReportException("Unsupported operator. This is weird."))
+
+        if len(filters) == 0:
+            return True
         
         for filt in filters:
             filter_ret = self._apply_filter_file(filt, f)
