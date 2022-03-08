@@ -89,8 +89,16 @@ def parse():
     
     parser.add_argument('-ff', '--file-filter',
                             type=str,
+                            action='append',
                             nargs="+",
                             help='filter on file containing argument',
+                            default=[])
+    
+    parser.add_argument('-fff', '--file-filter-file',
+                            type=str,
+                            action='append',
+                            nargs="+",
+                            help='filter on file containing file filters',
                             default=[])
     
     parser.add_argument('-f', '--format',
@@ -109,6 +117,25 @@ def parse():
     return args
 
 
+def _merge_file_filters(file_filter, file_filter_file):
+    new_filters = []
+
+    for filter_list in file_filter:
+        for filter in filter_list:
+            new_filters.append(filter)
+
+    for file_name_list in file_filter_file:
+        for file_name in file_name_list:
+            f = open(file_name, 'r')
+            for line in f.readlines():
+                stripped_line = line.strip().replace("\n","")
+                if not stripped_line.startswith("#") and len(stripped_line) > 0:
+                    reg_exp = stripped_line
+                    if not stripped_line.endswith("/"):
+                        reg_exp = stripped_line + "$"
+                    new_filters.append(reg_exp)
+ 
+    return new_filters
 
 def main():
     args = parse()
@@ -117,7 +144,8 @@ def main():
     reader = ScanReportReader(args.file)
 
     # Create filters
-    filters = create_filters(args.license_filter, args.file_filter)
+    file_filter = _merge_file_filters(args.file_filter, args.file_filter_file)
+    filters = create_filters(args.license_filter, file_filter)
 
     # Create output formatter
     formatter = FormatFactory.formatter(args.format)
