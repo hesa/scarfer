@@ -55,7 +55,7 @@ class TestScancodeReader(unittest.TestCase):
 
         self.assertIsNotNone(filtered_data)
         after_count = len(filtered_data['files'])
-        self.assertEqual(after_count, 1)
+        self.assertEqual(after_count, 321)
 
 if __name__ == '__main__':
     unittest.main()
