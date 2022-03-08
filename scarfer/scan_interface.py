@@ -67,7 +67,8 @@ class ScanReportReader:
 
     def _apply_filter_file(self, filt, f):
         if filt.type == ScanReportFilterType.FILE:
-            return re.search(filt.expr,f['path'])
+            ret = re.search(filt.expr, f['path'])
+            return ret != None
         elif filt.type == ScanReportFilterType.LICENSE:
             for l in f['license']['expressions']:
                 if re.search(filt.expr,l):
@@ -76,19 +77,21 @@ class ScanReportReader:
         else:
             raise(ScanReportException("Unsupported filter type. This is weird."))
             
-    def _apply_filters_file(self, f, filters):
-        # If no filters, True means show all
-        ret = True
+    def _apply_filters_file(self, f, filters, operator):
+
+        if operator == ScanReportFilterOperator.AND:
+            ret  = True
+        elif operator == ScanReportFilterOperator.OR:
+            ret  = False
+        else:
+            raise(ScanReportException("Unsupported operator. This is weird."))
         
         for filt in filters:
             filter_ret = self._apply_filter_file(filt, f)
-            if self.operator == ScanReportFilterOperator.AND:
+            if operator == ScanReportFilterOperator.AND:
                 ret  = ret and filter_ret
-            elif self.operator == ScanReportFilterOperator.OR:
+            elif operator == ScanReportFilterOperator.OR:
                 ret  = ret or filter_ret
-            else:
-                raise(ScanReportException("Unsupported operator. This is weird."))
-
         return ret
         
     def apply_filters(self, filters=[], operator = ScanReportFilterOperator.AND):
@@ -96,7 +99,7 @@ class ScanReportReader:
         
         keep_data = []
         for f in self.data:
-            if not self._apply_filters_file(f, filters):
+            if not self._apply_filters_file(f, filters, ScanReportFilterOperator.OR):
                 pass
             else:
                 keep_data.append(f)
