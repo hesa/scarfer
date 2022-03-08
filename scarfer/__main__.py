@@ -71,6 +71,11 @@ def parse():
                             help='output information about copyrights',
                             default=False)
     
+    parser.add_argument('-cu', '--cumulative',
+                            action='store_true',
+                            help='outpur cumulative license information',
+                            default=False)
+    
     parser.add_argument('-l', '--license',
                             action='store_true',
                             help='output information about license',
@@ -111,14 +116,14 @@ def main():
     # Create scan report reader 
     reader = ScanReportReader(args.file)
 
-    # Create filters 
+    # Create filters
     filters = create_filters(args.license_filter, args.file_filter)
 
     # Create output formatter
     formatter = FormatFactory.formatter(args.format)
 
     # Create settings map, to pass to reader (apply_filter)
-    settings = Settings(args.copyrights, args.license, args.matched_text)
+    settings = Settings(args.copyrights, args.license, args.matched_text, args.cumulative)
 
     # Read report
     reader.read()
