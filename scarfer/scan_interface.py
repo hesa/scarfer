@@ -197,7 +197,7 @@ class ScancodeReportReader(ScanReportReader):
         tool = headers['tool_name']
         #print("tool: " + str(tool))
         if tool.lower() != "scancode-toolkit":
-            print("Uh oh...")
+            #print("Uh oh...")
             raise(ScanReportException("File not in Scancode format"))
         #print("OK")
     
