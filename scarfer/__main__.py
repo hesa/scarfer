@@ -81,6 +81,11 @@ def parse():
                             help='output information about license',
                             default=False)
     
+    parser.add_argument('-ls', '--license-summary',
+                            action='store_true',
+                            help='output license summary',
+                            default=False)
+    
     parser.add_argument('-lf', '--license-filter',
                             type=str,
                             nargs="+",
@@ -151,7 +156,7 @@ def main():
     formatter = FormatFactory.formatter(args.format)
 
     # Create settings map, to pass to reader (apply_filter)
-    settings = Settings(args.copyrights, args.license, args.matched_text, args.cumulative)
+    settings = Settings(args.copyrights, args.license, args.matched_text, args.cumulative, args.license_summary)
 
     # Read report
     reader.read()
