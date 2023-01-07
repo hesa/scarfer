@@ -25,15 +25,15 @@ Scarfer can filter files:
 
 * include 
 
-** license name (`-il`) using Python's regular expressions
+    * license name (`-il`) using Python's regular expressions
 
-** license name (`-if`) using Python's regular expressions
+    * license name (`-if`) using Python's regular expressions
 
 * exclude
 
-** license name (`-el`) using Python's regular expressions
+    * license name (`-el`) using Python's regular expressions
 
-** license name (`-ef`) using Python's regular expressions
+    * license name (`-ef`) using Python's regular expressions
 
 *Note: if you're using more than one filter then filters are AND:ed together*
 
