@@ -109,9 +109,9 @@ class ScanReportReader:
     def _license_filter_count(self, filters):
         return self._generic_filter_count(filters, ScanReportFilterType.LICENSE)
     
-    def apply_filters(self, filters=[]):
+    def apply_filters(self, filters=[], exclude_filters=[]):
 
-        # filter on files
+        # filter in on files
         if self._file_filter_count(filters) > 0:
             keep_data = []
             for f in self.data:
@@ -123,7 +123,7 @@ class ScanReportReader:
         else:
             keep_data = self.data
             
-        # filter on licenses
+        # filter in on licenses
         if self._license_filter_count(filters) > 0:
             ret_data = []
             for f in keep_data:
@@ -131,11 +131,31 @@ class ScanReportReader:
                     pass
                 else:
                     ret_data.append(f)
-        else:
-            ret_data = keep_data
+            keep_data = ret_data
+
+        # filter out on files
+        if self._file_filter_count(exclude_filters) > 0:
+            ret_data = []
+            for f in keep_data:
+                if not self._apply_filters_file(f, exclude_filters, True):
+                    ret_data.append(f)
+                else:
+                    pass
+            keep_data = ret_data
+            
+        # filter out on licenses
+        if self._license_filter_count(exclude_filters) > 0:
+            ret_data = []
+            for f in keep_data:
+                if not self._apply_filters_file(f, exclude_filters, False):
+                    ret_data.append(f)
+                else:
+                    pass
+            keep_data = ret_data
                     
+
         licenses = set()
-        for f in ret_data:
+        for f in keep_data:
             for lic in f['license']['expressions']:
                 licenses.add(lic)
 
@@ -144,7 +164,7 @@ class ScanReportReader:
         parsed = licensing.parse(license_string)
 
         report_data = {}
-        report_data['files'] = ret_data
+        report_data['files'] = keep_data
         report_data['meta'] = {}
         report_data['cumulative'] = {}
         report_data['cumulative']['license'] = parsed
