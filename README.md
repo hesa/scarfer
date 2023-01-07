@@ -21,11 +21,19 @@ Scarfer can output the following information per file:
 
 * text that caused the license detection (`-m`)
 
-Scarfer can filter (include) files based on:
+Scarfer can filter files:
 
-* license name (`-lf`) using Python's regular expressions
+* include 
 
-* license name (`-ff`) using Python's regular expressions
+** license name (`-il`) using Python's regular expressions
+
+** license name (`-if`) using Python's regular expressions
+
+* exclude
+
+** license name (`-el`) using Python's regular expressions
+
+** license name (`-ef`) using Python's regular expressions
 
 *Note: if you're using more than one filter then filters are AND:ed together*
 
@@ -38,22 +46,27 @@ $ scarfer example-data/cairo-1.16.0-scan.json
 
 As above but output only files with path matching `drm`:
 ```
-$ scarfer example-data/cairo-1.16.0-scan.json -ff drm
+$ scarfer example-data/cairo-1.16.0-scan.json -if drm
 ```
 
 Output the file names (full path) of all the files in the Scancode report `example-data/cairo-1.16.0-scan.json` with a license matching `gpl-3`:
 ```
-$ scarfer example-data/cairo-1.16.0-scan.json -lf gpl-3
+$ scarfer example-data/cairo-1.16.0-scan.json -il gpl-3
 ```
 
 Output the file names (full path) of all the files in the Scancode report `example-data/cairo-1.16.0-scan.json` with a license matching `mpl` and files with path matching `drm`. The output should also contain information (per file) about license and copyright:
 ```
-$ scarfer example-data/cairo-1.16.0-scan.json -lf mpl -ff drm -c -l 
+$ scarfer example-data/cairo-1.16.0-scan.json -il mpl -if drm -c -l 
 ```
 
 To filter in all files containing "/*pdi" and ending with ".c":
 ```
-$ scarfer example-data/cairo-1.16.0-scan.json -ff "/.*pdi.*\.c$"
+$ scarfer example-data/cairo-1.16.0-scan.json -if "/.*pdi.*\.c$"
+```
+
+To filter out all files containing "/*pdi" and ending with ".c":
+```
+$ scarfer example-data/cairo-1.16.0-scan.json -ef "/.*pdi.*\.c$"
 ```
 
 
