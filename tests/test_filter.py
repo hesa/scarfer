@@ -1,6 +1,6 @@
 import unittest
 
-CAIRO_REPORT="example-data/cairo-1.16.0-scan.json"
+CAIRO_REPORT="example-data/scancode/no-format/cairo-1.16.0-scan.json"
 
 from scarfer.format.factory import FormatFactory
 from scarfer.scan_interface import ScanReportReader

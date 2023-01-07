@@ -181,7 +181,7 @@ class ScanReportReader:
             except Exception as e:
                 pass
         if self.data == None:
-            raise(ScanReportException("File not in a supported format"))
+            raise(ScanReportException(f"File {self.file_name} not in a supported format"))
         
     def report(self):
         if self.report_data == None:

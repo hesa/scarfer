@@ -43,6 +43,16 @@ class TextFormatter(FormatInterface):
             self._format_files(report, settings),
         ]
 
+        if settings.get('license_summary'):
+            license_summary = set()
+            for f in report['files']:
+                for l in f['license']['expressions']:
+                    license_summary.add(l)
+            print("SUMMARY: " + " AND ".join(license_summary))
+            import sys
+            
+            sys.exit(1)
+
         if settings.get('cumulative'):
             results.append("\nCumulative results:\n----------------------------")
             results.append(self._format_cumulative(report, settings))
