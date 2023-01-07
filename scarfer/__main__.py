@@ -86,20 +86,32 @@ def parse():
                             help='output license summary',
                             default=False)
     
-    parser.add_argument('-lf', '--license-filter',
+    parser.add_argument('-il', '--include-license',
                             type=str,
                             nargs="+",
                             help='filter on licenses containing argument',
                             default=[])
     
-    parser.add_argument('-ff', '--file-filter',
+    parser.add_argument('-el', '--exclude-license',
+                            type=str,
+                            nargs="+",
+                            help='filter out licenses containing argument',
+                            default=[])
+    
+    parser.add_argument('-if', '--include-file',
                             type=str,
                             action='append',
                             nargs="+",
                             help='filter on file containing argument',
                             default=[])
     
-    parser.add_argument('-fff', '--file-filter-file',
+    parser.add_argument('-ef', '--exclude-file',
+                            type=str,
+                            nargs="+",
+                            help='filter out on file containing argument',
+                            default=[])
+    
+    parser.add_argument('-iff', '--include-file-file',
                             type=str,
                             action='append',
                             nargs="+",
@@ -122,14 +134,14 @@ def parse():
     return args
 
 
-def _merge_file_filters(file_filter, file_filter_file):
+def _merge_file_filters(include_file, include_file_file):
     new_filters = []
 
-    for filter_list in file_filter:
-        for filter in filter_list:
+    for include_list in include_file:
+        for filter in include_list:
             new_filters.append(filter)
 
-    for file_name_list in file_filter_file:
+    for file_name_list in include_file_file:
         for file_name in file_name_list:
             f = open(file_name, 'r')
             for line in f.readlines():
@@ -149,9 +161,10 @@ def main():
     reader = ScanReportReader(args.file)
 
     # Create filters
-    file_filter = _merge_file_filters(args.file_filter, args.file_filter_file)
-    filters = create_filters(args.license_filter, file_filter)
-
+    include_files = _merge_file_filters(args.include_file, args.include_file_file)
+    filters = create_filters(args.include_license, include_files)
+    exclude_filters = create_filters(args.exclude_license, args.exclude_file)
+    
     # Create output formatter
     formatter = FormatFactory.formatter(args.format)
 
@@ -162,7 +175,7 @@ def main():
     reader.read()
 
     # Filter the data in the report, with the filters
-    reader.apply_filters(filters)
+    reader.apply_filters(filters, exclude_filters)
     filtered_files = reader.report()
 
     # Frmat the data 
