@@ -89,11 +89,13 @@ def parse():
     parser.add_argument('-il', '--include-license',
                             type=str,
                             nargs="+",
+                            action='append',
                             help='filter on licenses containing argument',
                             default=[])
     
     parser.add_argument('-el', '--exclude-license',
                             type=str,
+                            action='append',
                             nargs="+",
                             help='filter out licenses containing argument',
                             default=[])
@@ -107,6 +109,7 @@ def parse():
     
     parser.add_argument('-ef', '--exclude-file',
                             type=str,
+                            action='append',
                             nargs="+",
                             help='filter out on file containing argument',
                             default=[])
@@ -154,16 +157,28 @@ def _merge_file_filters(include_file, include_file_file):
  
     return new_filters
 
+def flatten_lists(lists):
+    new_list = []
+    for l in lists:
+        for elem in l:
+            new_list.append(elem)
+    return new_list
+
 def main():
     args = parse()
 
     # Create scan report reader 
     reader = ScanReportReader(args.file)
 
+    include_license = flatten_lists(args.include_license)
+    exclude_license = flatten_lists(args.exclude_license)
+    exclude_file = flatten_lists(args.exclude_file)
+    
     # Create filters
     include_files = _merge_file_filters(args.include_file, args.include_file_file)
-    filters = create_filters(args.include_license, include_files)
-    exclude_filters = create_filters(args.exclude_license, args.exclude_file)
+    filters = create_filters(include_license, include_files)
+    
+    exclude_filters = create_filters(exclude_license, exclude_file)
     
     # Create output formatter
     formatter = FormatFactory.formatter(args.format)
