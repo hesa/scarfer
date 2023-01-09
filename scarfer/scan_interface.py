@@ -215,7 +215,7 @@ class ScancodeReportReader(ScanReportReader):
         headers = self.json_data['headers'][0]
         #print(str(headers))
         tool = headers['tool_name']
-        self.scancode_format = headers['output_format_version']
+        self.scancode_format = headers.get('output_format_version', '')
         #print("tool: " + str(tool))
         if tool.lower() != "scancode-toolkit":
             raise(ScanReportException("File not in Scancode format"))
