@@ -1,17 +1,22 @@
 import unittest
 
-CAIRO_REPORT="example-data/scancode/no-format/cairo-1.16.0-scan.json"
+CAIRO_REPORT_0 = "example-data/scancode/no-format/cairo-1.16.0-scan.json"
+CAIRO_REPORT_1 = "example-data/scancode/1.0.0/cairo-1.16.0-scan.json"
+CAIRO_REPORT_2 = "example-data/scancode/2.0.0/cairo-1.16.0-scan.json"
 
 from scarfer.format.factory import FormatFactory
 from scarfer.scan_interface import ScanReportReader
 from scarfer.scan_interface import ScanReportFilter
 from scarfer.scan_interface import ScanReportFilterType
 
-class TestScancodeReader(unittest.TestCase):
+class TestScancodeReader_0(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
-        super(TestScancodeReader, self).__init__(*args, **kwargs)
-        self.reader = ScanReportReader(CAIRO_REPORT)
+        super(TestScancodeReader_0, self).__init__(*args, **kwargs)
+        self._setup(CAIRO_REPORT_0)
+
+    def _setup(self, report):
+        self.reader = ScanReportReader(report)
         self.reader.read()
         self.data = self.reader.raw_report()
         self.before_count = len(self.data)
@@ -107,6 +112,19 @@ class TestScancodeReader(unittest.TestCase):
         # $ PYTHONPATH=. ./scarfer/__main__.py example-data/cairo-1.16.0-scan.json -l | grep -v /test | grep -v x11-keith  | grep ^cairo | wc -l
         # 683
         self.assertEqual(after_count, 683)
+
+class TestScancodeReader_1(TestScancodeReader_0):
+
+    def __init__(self, *args, **kwargs):
+        super(TestScancodeReader_1, self).__init__(*args, **kwargs)
+        self._setup(CAIRO_REPORT_1)
+
+class TestScancodeReader_2(TestScancodeReader_0):
+
+    def __init__(self, *args, **kwargs):
+        super(TestScancodeReader_2, self).__init__(*args, **kwargs)
+        self._setup(CAIRO_REPORT_2)
+
 
 if __name__ == '__main__':
     unittest.main()
