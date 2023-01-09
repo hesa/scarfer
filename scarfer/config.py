@@ -1,2 +1,2 @@
-scarfer_version = 0.2
+scarfer_version = 0.3
 scarfer_name = "scarfer"
