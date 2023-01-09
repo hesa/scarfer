@@ -215,11 +215,16 @@ class ScancodeReportReader(ScanReportReader):
         headers = self.json_data['headers'][0]
         #print(str(headers))
         tool = headers['tool_name']
+        self.scancode_format = headers['output_format_version']
         #print("tool: " + str(tool))
         if tool.lower() != "scancode-toolkit":
-            print("Uh oh...")
             raise(ScanReportException("File not in Scancode format"))
-        #print("OK")
+
+        if self.scancode_format == "2.0.0":
+            self.copyright_value = "copyright"
+        else:
+            self.copyright_value = "value"
+        
     
     def read(self):
         with open(self.file_name) as fp:
@@ -242,7 +247,8 @@ class ScancodeReportReader(ScanReportReader):
             # copyright
             _file['copyrights'] = []
             for c in f['copyrights']:
-                _file['copyrights'].append(c['value'])
+                #print(" c: " + str(c) + "  reading: " + self.copyright_value)
+                _file['copyrights'].append(c[self.copyright_value])
                 pass
             _file['license'] = []
 
@@ -259,5 +265,6 @@ class ScancodeReportReader(ScanReportReader):
 
                 
             files.append(_file)
+            
         return files
 
