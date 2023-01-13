@@ -38,26 +38,34 @@ class TextFormatter(FormatInterface):
         
     
     def format(self, report, settings):
-        results = [
-            "Files:\n----------------------------",
-            self._format_files(report, settings),
-        ]
 
-        if settings.get('license_summary'):
-            license_summary = set()
-            for f in report['files']:
-                for l in f['license']['expressions']:
-                    license_summary.add(l)
-            print("SUMMARY: " + " AND ".join(license_summary))
-            import sys
-            
-            sys.exit(1)
+        if settings.get('license_summary') or settings.get('copyright_summary'):
+            res = ""
+            if settings.get('license_summary'):
+                license_summary = set()
+                for f in report['files']:
+                    for l in f['license']['expressions']:
+                        license_summary.add(l)
+                res += f'Licenses:\n { "AND ".join(license_summary)}\n'
 
-        if settings.get('cumulative'):
-            results.append("\nCumulative results:\n----------------------------")
-            results.append(self._format_cumulative(report, settings))
-
-        return "\n".join(results)
+            if settings.get('copyright_summary'):
+                copyright_summary = set()
+                for f in report['files']:
+                    for l in f['copyrights']:
+                        copyright_summary.add(l)
+                c_list = list(copyright_summary)
+                c_list.sort()
+                c_string = "\n".join(c_list)
+                res += f'Copyrights:\n{c_string}\n'
+            return res
+        elif settings.get('cumulative'):
+            return self._format_cumulative(report, settings)
+        else:
+            results = [
+                "Files:\n----------------------------",
+                self._format_files(report, settings),
+            ]
+            return "\n".join(results)
 
 
         
