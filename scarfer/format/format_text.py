@@ -46,7 +46,7 @@ class TextFormatter(FormatInterface):
                 for f in report['files']:
                     for l in f['license']['expressions']:
                         license_summary.add(l)
-                res += f'Licenses:\n { "AND ".join(license_summary)}\n'
+                res += f'Licenses:\n { " AND ".join(license_summary)}\n'
 
             if settings.get('copyright_summary'):
                 copyright_summary = set()
