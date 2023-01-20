@@ -5,8 +5,8 @@
 import setuptools
 from scarfer.config import scarfer_version
 
-with open("DESCRIPTION.md") as i:
-    _long_description = i.read()
+_long_description = "Scarfer outputs compliance related information from a scan report."
+
 
 requirements = []
 with open('requirements.txt') as f:
