@@ -18,7 +18,7 @@ class TestScancodeReader_0(unittest.TestCase):
     def _setup(self, report):
         self.reader = ScanReportReader(report)
         self.reader.read()
-        self.data = self.reader.raw_report()
+        self.data = self.reader.report()['files']
         self.before_count = len(self.data)
         self.assertEqual(self.before_count, 4686)
 
