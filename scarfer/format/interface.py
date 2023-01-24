@@ -21,8 +21,16 @@ class FormatInterface:
     def format(self, report, settings={}):
         return 
 
+    def format_fixes(self, report, settings={}):
+        return 
 
+    def format_license_summary(self, report, settings={}):
+        return 
 
+    def format_copyright_summary(self, report, settings={}):
+        return
 
+    def format_cumulative(self, report, settings={}):
+        return 
 
 

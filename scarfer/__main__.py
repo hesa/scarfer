@@ -6,6 +6,8 @@
 
 from argparse import RawTextHelpFormatter
 import argparse
+import json
+import sys
 import os
 
 from scarfer.format.factory import FormatFactory
@@ -57,9 +59,9 @@ def parse():
     )
 
     parser.add_argument('file',
-                            type=str,
-                            help='Scan report to use',
-                            default=None)
+                        type=str,
+                        help='Scan report to use',
+                        default=None)
     
     parser.add_argument('-m', '--matched-text',
                             action='store_true',
@@ -126,10 +128,37 @@ def parse():
                             help='filter on file containing file filters',
                             default=[])
     
+    parser.add_argument('-eff', '--exclude-file-file',
+                            type=str,
+                            action='append',
+                            nargs="+",
+                            help='filter out on file containing file filters',
+                            default=[])
+    
+    parser.add_argument('-cml', '--curate-missing-license',
+                        type=str,
+                        dest='curate_missing_license',
+                        action='append',
+                        help='curate missing license for a file with',
+                        default=[])
+    
+    parser.add_argument('-cfl', '--curate-file-license',
+                        type=str,
+                        dest='curate_file_license',
+                        nargs="+",
+                        action='append',
+                        help='curate license for a file with: file1 file2 curated-license',
+                        default=[])
+    
     parser.add_argument('-f', '--format',
                             type=str,
                             help='output result in specified format, default is ' + OUTPUT_FORMAT_TEXT,
                             default=OUTPUT_FORMAT_TEXT)
+
+    parser.add_argument('--output-fixes',
+                        dest='output_fixes',
+                        action='store_true',
+                        help='output files filtered out and curations')
 
     parser.add_argument('--version', '-V', action='version', version="{name}: {version}".format(name=scarfer_name, version=scarfer_version))
 
@@ -137,19 +166,32 @@ def parse():
                             action='store_true',
                             help='output verbose information to stderr',
                             default=False)
+    
+    parser.add_argument('-oc', '--output--config',
+                        action='store_true',
+                        dest="output_config",
+                        help='output command line options as configuration',
+                        default=False)
+    
+    parser.add_argument('--config',
+                        type=str,
+                        dest="read_config",
+                        help='read configuration from file',
+                        default=False)
+    
     args = parser.parse_args()
 
     return args
 
 
-def _merge_file_filters(include_file, include_file_file):
+def _merge_file_filters(clude_file, clude_file_file):
     new_filters = []
 
-    for include_list in include_file:
+    for include_list in clude_file:
         for filter in include_list:
             new_filters.append(filter)
 
-    for file_name_list in include_file_file:
+    for file_name_list in clude_file_file:
         for file_name in file_name_list:
             f = open(file_name, 'r')
             for line in f.readlines():
@@ -169,37 +211,130 @@ def flatten_lists(lists):
             new_list.append(elem)
     return new_list
 
+def _output_config(args):
+    config = {
+#        "copyrights": args.copyrights,
+#        "cumulative": args.cumulative,
+        "curate_missing_license": args.curate_missing_license,
+        "curate_file_license": args.curate_file_license,
+        "exclude_file": args.exclude_file,
+        "exclude_file_file": args.exclude_file_file,
+        "exclude_license": args.exclude_license,
+        "file": args.file,
+#        "format": args.format,
+        "include_file": args.include_file,
+        "include_file_file": args.include_file_file,
+        "include_license": args.include_license,
+#        "license": args.license,
+#        "license_summary": args.license_summary,
+#        "matched_text": args.matched_text
+        }
+    return json.dumps(config, indent=4)
+        
+def _read_config(config_file, args):
+    new_args = {}
+        
+    for key in args.__dict__:
+        new_args[key] = vars(args).get(key)
+
+    if not args.read_config:
+        return new_args
+    
+    with open(config_file) as conf:
+        confs = json.load(conf)
+
+    for key, value in confs.items():
+        new_args[key] = value
+
+    return new_args
+
+    # 0xDEADC0DE
+    for key in args.__dict__:
+        args_val = vars(args)[key]
+        conf_val = new_args.get(key)
+        print(f'{key}: {args_val} : {conf_val}')
+        if args_val == conf_val:
+            #print(f'key {key} same')
+            pass
+        elif key not in args:
+            print(f'key {key} not found')
+            pass
+        else:
+            print(f'key {key} differs:  conf: {conf_val}')
+            if isinstance(conf_val,list):
+                new_args[key] += args_val
+            else:
+                new_args[key] = args_val
+            print(f'key {key} now: {new_args[key]}')
+        
+
 def main():
+    
     args = parse()
 
-    # Create scan report reader 
-    reader = ScanReportReader(args.file)
+    if args.output_config:
+        print(_output_config(args))
+        sys.exit(0)
+        
+    args = _read_config(args.read_config, args)
 
-    include_license = flatten_lists(args.include_license)
-    exclude_license = flatten_lists(args.exclude_license)
-    exclude_file = flatten_lists(args.exclude_file)
+    # Create scan report reader 
+    reader = ScanReportReader(args['file'])
+
+    include_license = flatten_lists(args['include_license'])
+    exclude_license = flatten_lists(args['exclude_license'])
+    #exclude_file = flatten_lists(args['exclude_file)
     
     # Create filters
-    include_files = _merge_file_filters(args.include_file, args.include_file_file)
+    include_files = _merge_file_filters(args['include_file'], args['include_file_file'])
     filters = create_filters(include_license, include_files)
     
-    exclude_filters = create_filters(exclude_license, exclude_file)
+    exclude_files = _merge_file_filters(args['exclude_file'], args['exclude_file_file'])
+    exclude_filters = create_filters(exclude_license, exclude_files)
+    
+#    print(f"include_files:   {include_files}")
+#    print(f"include_filters: {filters}")
+#    print(f"exclude_files:   {exclude_files}")
+#    print(f"exclude_filters: {exclude_filters}")
     
     # Create output formatter
-    formatter = FormatFactory.formatter(args.format)
+    formatter = FormatFactory.formatter(args['format'])
 
     # Create settings map, to pass to reader (apply_filter)
-    settings = Settings(args.copyrights, args.license, args.matched_text, args.cumulative, args.license_summary, args.copyright_summary)
+    settings = Settings(args['copyrights'], args['license'], args['matched_text'], args['cumulative'], args['license_summary'], args['copyright_summary'])
 
     # Read report
     reader.read()
 
     # Filter the data in the report, with the filters
     reader.apply_filters(filters, exclude_filters)
+
+    #
+    # Curations
+    # 
+    if args['curate_missing_license']:
+        reader.curate_missing_license(args['curate_missing_license'])
+    if args['curate_file_license']:
+        for curation in args["curate_file_license"]:
+            length = len(curation)
+            nr_files = length -1
+            curated_license = curation[nr_files]
+            files = curation[0:nr_files]
+            reader.curate_file_license(files, curated_license)
+            
     filtered_files = reader.report()
 
-    # Frmat the data 
-    formatted_data = formatter.format(filtered_files, settings)
+    # Format the data
+    if args['copyright_summary']:
+        formatted_data = formatter.format_copyright_summary(filtered_files, settings)
+    elif args['license_summary']:
+        formatted_data = formatter.format_license_summary(filtered_files, settings)
+    elif args['cumulative']:
+        formatted_data = formatter.format_cumulative(filtered_files, settings)
+    elif args['output_fixes']:
+        formatted_data = formatter.format_fixes(reader.fixes(), settings)
+    else:
+        formatted_data = formatter.format(filtered_files, settings)
 
     # Print the data
     print(formatted_data)
