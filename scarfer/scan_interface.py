@@ -108,27 +108,78 @@ class ScanReportReader:
     
     def _license_filter_count(self, filters):
         return self._generic_filter_count(filters, ScanReportFilterType.LICENSE)
+
+    def __licenses_simplified(self, files):
+        licenses = set()
+        for f in files:
+            for lic in f['license']['expressions']:
+                licenses.add(lic)
+
+        licenses_with_parenthesises = []
+        for l in licenses:
+            licenses_with_parenthesises.append(f" ( {l} )")
+        #print(f"\nlic par:     {licenses_with_parenthesises}")
+        license_string = " and ".join(licenses_with_parenthesises)
+        licensing = Licensing()
+        parsed = licensing.parse(license_string)
+        if parsed is None:
+            simplified = parsed
+        else:
+            simplified = parsed.simplify()
+        return simplified
+
+    def curate_missing_license(self, curated_license):
+        for f in self.data:
+            if f['license']['expressions'] == [ 'missing' ]:
+                f['license']['expressions'] = curated_license
+                self.report_data['fixes']['missing_license'].append(
+                    {
+                        'file': f['path'],
+                        'curation': curated_license
+                    }
+                )
+        
+        self.report_data['cumulative']['license'] = self.__licenses_simplified(self.report_data['files'])
+    
+    def curate_file_license(self, files, curated_license):
+        for curated_file in files:
+            for f in self.data:
+                if curated_file in f['path']:
+                    #print(f'------ file: {f["path"]}')
+                    orig = f['license']['expressions']
+                    f['license']['expressions'] = [ curated_license ]
+                    self.report_data['fixes']['curated_licenses'].append(
+                        {
+                            'file': f['path'],
+                            'curation': curated_license,
+                            'original': orig
+                        }
+                    )
+        
+        self.report_data['cumulative']['license'] = self.__licenses_simplified(self.report_data['files'])
     
     def apply_filters(self, filters=[], exclude_filters=[]):
 
         # filter in on files
         if self._file_filter_count(filters) > 0:
             keep_data = []
+            discard_data = []
             for f in self.data:
                 #print("f: " + str(f['path']))
                 if not self._apply_filters_file(f, filters, True):
-                    pass
+                    discard_data.append(f)
                 else:
                     keep_data.append(f)
         else:
             keep_data = self.data
+            discard_data = []
             
         # filter in on licenses
         if self._license_filter_count(filters) > 0:
             ret_data = []
             for f in keep_data:
                 if not self._apply_filters_file(f, filters, False):
-                    pass
+                    discard_data.append(f)
                 else:
                     ret_data.append(f)
             keep_data = ret_data
@@ -140,7 +191,7 @@ class ScanReportReader:
                 if not self._apply_filters_file(f, exclude_filters, True):
                     ret_data.append(f)
                 else:
-                    pass
+                    discard_data.append(f)
             keep_data = ret_data
             
         # filter out on licenses
@@ -150,25 +201,25 @@ class ScanReportReader:
                 if not self._apply_filters_file(f, exclude_filters, False):
                     ret_data.append(f)
                 else:
-                    pass
+                    discard_data.append(f)
+
             keep_data = ret_data
                     
 
-        licenses = set()
         for f in keep_data:
-            for lic in f['license']['expressions']:
-                licenses.add(lic)
-
-        license_string = " and ".join(licenses)
-        licensing = Licensing()
-        parsed = licensing.parse(license_string)
+            # If no license identified, mark as missing
+            if f['license']['expressions'] == []:
+                f['license']['expressions'] = [ "missing" ]
 
         report_data = {}
         report_data['files'] = keep_data
+        report_data['fixes'] = {}
+        report_data['fixes']['excluded_files'] = discard_data
+        report_data['fixes']['missing_license'] = []
+        report_data['fixes']['curated_licenses'] = []
         report_data['meta'] = {}
         report_data['cumulative'] = {}
-        report_data['cumulative']['license'] = parsed
-                
+        report_data['cumulative']['license'] = self.__licenses_simplified(keep_data)
         self.report_data = report_data
     
     def read(self):
@@ -187,9 +238,14 @@ class ScanReportReader:
         if self.report_data == None:
             self.apply_filters([])
         return self.report_data
+    
+    def fixes(self):
+        if self.report_data == None:
+            self.apply_filters([])
+        return self.report_data['fixes']
 
     def raw_report(self):
-        return self.data
+        return self.report
     
     def __str__(self):
         ret = ["path: {name}".format(name=self.file_name)]
@@ -250,7 +306,6 @@ class ScancodeReportReader(ScanReportReader):
                 #print(" c: " + str(c) + "  reading: " + self.copyright_value)
                 _file['copyrights'].append(c[self.copyright_value])
                 pass
-            _file['license'] = []
 
             # license
             _file['license'] = {}
