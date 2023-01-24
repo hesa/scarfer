@@ -64,6 +64,7 @@ class ScanReportFilter:
 class ScanReportReader:
     def __init__(self, file_name):
         self.file_name = file_name
+        self.report_data = None
 
     def _apply_filter_file(self, filt, f):
         if filt.type == ScanReportFilterType.FILE:
@@ -241,11 +242,11 @@ class ScanReportReader:
     
     def fixes(self):
         if self.report_data == None:
-            self.apply_filters([])
+            self.apply_filters()
         return self.report_data['fixes']
 
     def raw_report(self):
-        return self.report
+        return self.report()['files']
     
     def __str__(self):
         ret = ["path: {name}".format(name=self.file_name)]
