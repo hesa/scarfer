@@ -21,21 +21,49 @@ Scarfer can output the following information per file:
 
 * text that caused the license detection (`-m`)
 
+Scarfer can output the following summaries
+
+* license summary (using `-ls`)
+
+* copyright summary (using `-cs`)
+
+## Filter
+
 Scarfer can filter files:
 
 * include 
 
     * license name (`-il`) using Python's regular expressions
 
-    * license name (`-if`) using Python's regular expressions
+    * files (`-if`) using Python's regular expressions
+
+    * files (`-iff`) by reading a file, containing file names, using Python's regular expressions
 
 * exclude
 
     * license name (`-el`) using Python's regular expressions
 
-    * license name (`-ef`) using Python's regular expressions
+    * files (`-ef`) using Python's regular expressions
+
+    * files (`-eff`) by reading a file, containing file names, using Python's regular expressions
 
 *Note: if you're using more than one filter then filters are AND:ed together*
+
+## Curate
+
+Scarfer can curate (fix, amend) license identifications:
+
+* curate license (`-cml`) for all files with missing license
+
+* curate license (`-cfl`) for all files matching Python's regular expressions
+
+## Configuration file
+
+Scarfer can write and read configuration files:
+
+* output current (`-oc`) command line options to a configuration output
+
+* read configuration file (`--config`)
 
 # Example use
 
@@ -68,7 +96,6 @@ To filter out all files containing "/*pdi" and ending with ".c":
 ```
 $ scarfer example-data/cairo-1.16.0-scan.json -ef "/.*pdi.*\.c$"
 ```
-
 
 # Supported scan report formats
 
