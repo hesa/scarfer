@@ -1,6 +1,7 @@
 from scarfer.format.format_json import JsonFormatter
 from scarfer.format.format_yaml import YamlFormatter
 from scarfer.format.format_text import TextFormatter
+from scarfer.format.format_markdown import MarkdownFormatter
 
 
 class FormatFactory:
@@ -13,3 +14,5 @@ class FormatFactory:
             return YamlFormatter()
         elif format.lower() == "text" or format.lower() == "txt":
             return TextFormatter()
+        elif format.lower() == "markdown" or format.lower() == "md":
+            return MarkdownFormatter()
