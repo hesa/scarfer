@@ -13,6 +13,7 @@ import os
 from scarfer.format.factory import FormatFactory
 from scarfer.scan_interface import ScanReportReader
 from scarfer.scan_interface import ScanReportException
+from scarfer.analyzer import Analyzer
 from scarfer.format.interface import Settings
 from scarfer.filter_utils import create_filters
 from scarfer.config import scarfer_version
@@ -62,6 +63,11 @@ def parse():
                         type=str,
                         help='Scan report to use',
                         default=None)
+    
+    parser.add_argument('--normalize',
+                        action='store_true',
+                        help='quit after scan report normalization and outpout result',
+                        default=False)
     
     parser.add_argument('-m', '--matched-text',
                             action='store_true',
@@ -281,6 +287,13 @@ def main():
     # Create scan report reader 
     reader = ScanReportReader(args['file'])
 
+    # Get a normalized report
+    normalized_report = reader.read()
+    if args['normalize']:
+        reader.validate()
+        print(json.dumps(normalized_report, indent=4))
+        sys.exit(0)
+    
     include_license = flatten_lists(args['include_license'])
     exclude_license = flatten_lists(args['exclude_license'])
     #exclude_file = flatten_lists(args['exclude_file)
@@ -300,29 +313,27 @@ def main():
     # Create output formatter
     formatter = FormatFactory.formatter(args['format'])
 
-    # Create settings map, to pass to reader (apply_filter)
+    # Create settings map, to pass to apply_filter
     settings = Settings(args['copyrights'], args['license'], args['matched_text'], args['cumulative'], args['license_summary'], args['copyright_summary'])
 
-    # Read report
-    reader.read()
-
     # Filter the data in the report, with the filters
-    reader.apply_filters(filters, exclude_filters)
+    analyzer = Analyzer(normalized_report)
+    analyzer.apply_filters(filters, exclude_filters)
 
     #
     # Curations
     # 
     if args['curate_missing_license']:
-        reader.curate_missing_license(args['curate_missing_license'])
+        analyzer.curate_missing_license(args['curate_missing_license'])
     if args['curate_file_license']:
         for curation in args["curate_file_license"]:
             length = len(curation)
             nr_files = length -1
             curated_license = curation[nr_files]
             files = curation[0:nr_files]
-            reader.curate_file_license(files, curated_license)
+            analyzer.curate_file_license(files, curated_license)
             
-    filtered_files = reader.report()
+    filtered_files = analyzer.report()
 
     # Format the data
     if args['copyright_summary']:
