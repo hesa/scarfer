@@ -1,2 +1,3 @@
 PyYAML
 license_expression
+jsonschema

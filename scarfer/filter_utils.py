@@ -1,5 +1,5 @@
-from scarfer.scan_interface import ScanReportFilter
-from scarfer.scan_interface import ScanReportFilterType
+from scarfer.analyzer import ScanReportFilter
+from scarfer.analyzer import ScanReportFilterType
 
 def _create_filter(expr, type):
     return ScanReportFilter(expr, type)

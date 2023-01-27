@@ -1,0 +1,86 @@
+{
+    "$schema" : "http://json-schema.org/draft-07/schema#",
+    "$id" : "http://spdx.org/rdf/terms",
+    "title" : "SPDX 2.2",
+    "type" : "object",
+    "properties" : {
+        "meta" : {
+            "type" : "object",
+            "properties" : {
+                "scanner" : {
+                    "type" : "object",
+                    "properties" : {
+                        "tool_name" : {
+                            "description" : "",
+                            "type" : "string"
+                        },
+                        "tool_version" : {
+                            "description" : "",
+                            "type" : "string"
+                        },
+                        "tool_output_format" : {
+                            "description" : "",
+                            "type" : "string"
+                        }
+                    },
+                    "required": ["tool_name", "tool_version", "tool_output_format"]
+                }
+            },
+            "required": ["scanner"]
+        },
+        "files": {
+            "type" : "array",
+            "items" : {
+                "type" : "object",
+                "properties" : {
+                    "path" : {
+                        "type" : "string",
+                        "description" : ""
+                    },
+                    "sha1" : {
+                        "type" : [ "string", "null" ],
+                        "description" : ""
+                    },
+                    "sha256" : {
+                        "type" : [ "string", "null" ],
+                        "description" : ""
+                    },
+                    "md5" : {
+                        "type" : [ "string", "null" ],
+                        "description" : ""
+                    },
+                    "copyrights": {
+                        "type" : "array",
+                        "items" : {
+                            "type": "string"
+                        }
+                    },
+                    "license": {
+                        "type" : "object",
+                        "items" : {
+                            "properties" : {
+                                "expressions" : {
+                                    "description" : "",
+                                    "type" : "array",
+                                    "items" : {
+                                        "type": "string"
+                                    }
+                                },
+                                "matches" : {
+                                    "description" : "",
+                                    "type" : "array",
+                                    "items" : {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "required": [ "expressions" ]
+                        }
+                    }
+                },
+                "required": [ "path", "sha1", "sha256", "md5", "copyrights" ]
+            }
+        }
+    },
+    "required": ["meta", "files"]
+}
