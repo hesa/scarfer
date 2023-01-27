@@ -6,8 +6,9 @@ CAIRO_REPORT_2 = "example-data/scancode/2.0.0/cairo-1.16.0-scan.json"
 
 from scarfer.format.factory import FormatFactory
 from scarfer.scan_interface import ScanReportReader
-from scarfer.scan_interface import ScanReportFilter
-from scarfer.scan_interface import ScanReportFilterType
+from scarfer.analyzer import ScanReportFilter
+from scarfer.analyzer import ScanReportFilterType
+from scarfer.analyzer import Analyzer
 
 class TestScancodeReader_0(unittest.TestCase):
 
@@ -17,18 +18,20 @@ class TestScancodeReader_0(unittest.TestCase):
 
     def _setup(self, report):
         self.reader = ScanReportReader(report)
-        self.reader.read()
-        self.data = self.reader.report()['files']
-        self.before_count = len(self.data)
+        normalized_report = self.reader.read()
+        self.analyzer = Analyzer(normalized_report)
+        self.analyzer.apply_filters()
+        self.data = self.analyzer.report()
+        self.before_count = len(self.data['files'])
         self.assertEqual(self.before_count, 4686)
 
     def test_license_filter(self):
         # filter in files with license with "x11"
         license_filter = ScanReportFilter("x11", ScanReportFilterType.LICENSE)
         # apply filter
-        self.reader.apply_filters([license_filter])
+        self.analyzer.apply_filters([license_filter])
 
-        filtered_data = self.reader.report()
+        filtered_data = self.analyzer.report()
         
         self.assertIsNotNone(filtered_data)
         after_count = len(filtered_data['files'])
@@ -40,8 +43,8 @@ class TestScancodeReader_0(unittest.TestCase):
         file_filter = ScanReportFilter("cairo-xcb")
         
         # apply filter
-        self.reader.apply_filters([file_filter])
-        filtered_data = self.reader.report()
+        self.analyzer.apply_filters([file_filter])
+        filtered_data = self.analyzer.report()
 
         self.assertIsNotNone(filtered_data)
         after_count = len(filtered_data['files'])
@@ -55,8 +58,8 @@ class TestScancodeReader_0(unittest.TestCase):
         file_filter = ScanReportFilter("cairo-xcb")
 
         # apply filter
-        self.reader.apply_filters([file_filter, license_filter])
-        filtered_data = self.reader.report()
+        self.analyzer.apply_filters([file_filter, license_filter])
+        filtered_data = self.analyzer.report()
 
         self.assertIsNotNone(filtered_data)
         after_count = len(filtered_data['files'])
@@ -68,8 +71,8 @@ class TestScancodeReader_0(unittest.TestCase):
         license_filter = ScanReportFilter("x11-keith", ScanReportFilterType.LICENSE)
 
         # apply filter
-        self.reader.apply_filters([], [license_filter])
-        filtered_data = self.reader.report()
+        self.analyzer.apply_filters([], [license_filter])
+        filtered_data = self.analyzer.report()
 
         self.assertIsNotNone(filtered_data)
         after_count = len(filtered_data['files'])
@@ -84,8 +87,8 @@ class TestScancodeReader_0(unittest.TestCase):
         file_filter = ScanReportFilter("/test")
 
         # apply filter
-        self.reader.apply_filters([], [file_filter])
-        filtered_data = self.reader.report()
+        self.analyzer.apply_filters([], [file_filter])
+        filtered_data = self.analyzer.report()
 
         self.assertIsNotNone(filtered_data)
         after_count = len(filtered_data['files'])
@@ -103,8 +106,8 @@ class TestScancodeReader_0(unittest.TestCase):
         file_filter = ScanReportFilter("/test")
 
         # apply filter
-        self.reader.apply_filters([], [file_filter, license_filter])
-        filtered_data = self.reader.report()
+        self.analyzer.apply_filters([], [file_filter, license_filter])
+        filtered_data = self.analyzer.report()
 
         self.assertIsNotNone(filtered_data)
         after_count = len(filtered_data['files'])
