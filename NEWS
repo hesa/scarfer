@@ -1,6 +1,11 @@
 0.3.6
 -----------------
 
+When using "-ls" and "-cs" output both copyright and license summaries.
+
+0.3.6
+-----------------
+
 As 0.3.5
 
 0.3.5
