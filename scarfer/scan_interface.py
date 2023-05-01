@@ -52,7 +52,7 @@ class ScanReportReader:
             jsonschema.validate(instance=self.data, schema=self.schema)
         
     def read(self):
-        clazzes = [ FakeReportReader, FakeReportReader, ScancodeReportReader ]
+        clazzes = [ FakeReportReader, ScancodeReportReader ]
         self.data = None
         for clazz in clazzes:
             try:
@@ -84,12 +84,10 @@ class ScancodeReportReader(ScanReportReader):
 
     def check_file_format(self):
         headers = self.json_data['headers'][0]
-        #print(str(headers))
         tool = headers['tool_name']
         self.scancode_format = headers.get('output_format_version', '')
-        #print("tool: " + str(tool))
         if tool.lower() != "scancode-toolkit":
-            raise(ScanReportException("File not in Scancode format"))
+            raise(ScanReportException(f'File not in Scancode format. Tool={tool}'))
 
         if self.scancode_format == "2.0.0":
             self.copyright_value = "copyright"
@@ -107,20 +105,19 @@ class ScancodeReportReader(ScanReportReader):
 
         files = []
 
+
         for f in self.files:
-            
             if not f['type'] == "file":
                 continue
-            
             
             _file = {}
             
             # path
-            _file['path'] = f['path']
-            _file['sha1'] = f['sha1']
-            _file['md5'] = f['md5']
-            _file['sha256'] = f['sha256']
-            
+            _file['path'] = f.get('path','')
+            _file['sha1'] = f.get('sha1','')
+            _file['md5'] = f.get('md5','')
+            _file['sha256'] = f.get('sha256','')
+
             # copyright
             _file['copyrights'] = []
             for c in f['copyrights']:
@@ -132,9 +129,10 @@ class ScancodeReportReader(ScanReportReader):
             _file['license'] = {}
             matches = []
             for l in f['licenses']:
-                matches.append({
-                    "key": l['key'],
-                    "text": l['matched_text']
+                if 'key' in l and 'matched_text' in l:
+                    matches.append({
+                        "key": l['key'],
+                        "text": l['matched_text']
                     })
             _file['license']['expressions'] = f['license_expressions']
             _file['license']['matches'] = matches
