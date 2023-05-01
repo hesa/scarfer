@@ -336,10 +336,13 @@ def main():
     filtered_files = analyzer.report()
 
     # Format the data
-    if args['copyright_summary']:
-        formatted_data = formatter.format_copyright_summary(filtered_files, settings)
-    elif args['license_summary']:
-        formatted_data = formatter.format_license_summary(filtered_files, settings)
+    if args['copyright_summary'] or args['license_summary']:
+        formatted_data_list = []
+        if args['copyright_summary']:
+            formatted_data_list.append(formatter.format_copyright_summary(filtered_files, settings))
+        if args['license_summary']:
+            formatted_data_list.append(formatter.format_license_summary(filtered_files, settings))
+        formatted_data = "\n".join(formatted_data_list)
     elif args['cumulative']:
         formatted_data = formatter.format_cumulative(filtered_files, settings)
     elif args['output_fixes']:
