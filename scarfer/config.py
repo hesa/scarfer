@@ -1,2 +1,2 @@
-scarfer_version = "0.3.4"
+scarfer_version = "0.3.5"
 scarfer_name = "scarfer"
