@@ -18,10 +18,12 @@ from scarfer.format.interface import Settings
 from scarfer.filter_utils import create_filters
 from scarfer.config import scarfer_version
 from scarfer.config import scarfer_name
+from scarfer.config import DEFAULT_FILE_EXCLUDE_FILE
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 PROGRAM_NAME = scarfer_name
+PROGRAM_VERSION = scarfer_version
 PROGRAM_DESCRIPTION = "Source code scan report file reporter reads scan reports and outputs selected information about filtered files"
 PROGRAM_URL = "https://github.com/hesa/scarfer"
 PROGRAM_EXAMPLES = "   Coming soon."
@@ -42,7 +44,7 @@ DATE_FMT = '%Y-%m-%d'
 
 def parse():
 
-    description = "NAME\n  " + PROGRAM_NAME + "\n\n"
+    description = f'NAME\n  {PROGRAM_NAME} ({PROGRAM_VERSION})\n\n'
     description = description + "DESCRIPTION\n  " + PROGRAM_DESCRIPTION + "\n\n"
     
     epilog = ""
@@ -141,6 +143,10 @@ def parse():
                             help='filter out on file containing file filters',
                             default=[])
     
+    parser.add_argument('-dde', '--disable-default-excludes',
+                        action='store_true',
+                        help=f'Disable exclusion of files as specified in {DEFAULT_FILE_EXCLUDE_FILE}')
+
     parser.add_argument('-cml', '--curate-missing-license',
                         type=str,
                         dest='curate_missing_license',
@@ -219,6 +225,8 @@ def flatten_lists(lists):
 
 def _output_config(args):
     config = {
+        'tool_name': scarfer_name,
+        'tool_version': scarfer_version,
 #        "copyrights": args.copyrights,
 #        "cumulative": args.cumulative,
         "curate_missing_license": args.curate_missing_license,
@@ -301,7 +309,11 @@ def main():
     # Create filters
     include_files = _merge_file_filters(args['include_file'], args['include_file_file'])
     filters = create_filters(include_license, include_files)
-    
+
+    if args['disable_default_excludes']:
+        pass
+    else:
+        args['exclude_file_file'].append([DEFAULT_FILE_EXCLUDE_FILE])
     exclude_files = _merge_file_filters(args['exclude_file'], args['exclude_file_file'])
     exclude_filters = create_filters(exclude_license, exclude_files)
     
