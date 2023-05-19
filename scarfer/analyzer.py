@@ -41,9 +41,13 @@ class Analyzer:
             ret = re.search(filt.expr, f['path'])
             return ret != None
         elif filt.type == ScanReportFilterType.LICENSE:
-            for l in f['license']['expressions']:
-                if re.search(filt.expr,l):
-                    return True
+            if len(f['license']['expressions']) == 0:
+                if filt.expr == "missing":
+                    return  True
+            else:
+                for l in f['license']['expressions']:
+                    if re.search(filt.expr,l):
+                        return True
             return False
         else:
             raise(ScanReportException("Unsupported filter type. This is weird."))
