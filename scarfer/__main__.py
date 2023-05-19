@@ -20,6 +20,8 @@ from scarfer.config import scarfer_version
 from scarfer.config import scarfer_name
 from scarfer.config import DEFAULT_FILE_EXCLUDE_FILE
 
+import logging
+
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 PROGRAM_NAME = scarfer_name
@@ -286,6 +288,9 @@ def main():
     
     args = parse()
 
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+
     if args.output_config:
         print(_output_config(args))
         sys.exit(0)
@@ -296,7 +301,12 @@ def main():
     reader = ScanReportReader(args['file'])
 
     # Get a normalized report
-    normalized_report = reader.read()
+    try:
+        normalized_report = reader.read()
+    except Exception as e:
+        logging.error(f'Could not read scan report file: {reader.report_file()}')
+        logging.error(f'Cause: {e}')
+        sys.exit(0)
     if args['normalize']:
         reader.validate()
         print(json.dumps(normalized_report, indent=4))
