@@ -1,4 +1,5 @@
 from scarfer.format.interface import FormatInterface
+from scarfer.format.format_utils import summarize_license
 import os
 
 class TextFormatter(FormatInterface):
@@ -52,13 +53,15 @@ class TextFormatter(FormatInterface):
         cumulative = report['cumulative']
         ret.append(f"Cumulative license: {cumulative['license']}")
         return "\n".join(ret)
-        
+
+    
+    
     def format_license_summary(self, report, settings={}):
         license_summary = set()
         for f in report['files']:
             for l in f['license']['expressions']:
                 license_summary.add(l)
-        return f'License:\n { " AND ".join(license_summary)}\n'
+        return f'License:\n {summarize_license(list(license_summary))}\n'
 
     def format_copyright_summary(self, report, settings={}):
         copyright_summary = set()
