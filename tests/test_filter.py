@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Henrik Sandklef
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 import unittest
 
 CAIRO_REPORT_0 = "example-data/scancode/no-format/cairo-1.16.0-scan.json"

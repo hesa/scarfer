@@ -1,3 +1,10 @@
+0.3.9
+-----------------
+
+* add support for filtering on missing license, "--il missing"
+
+* add support to list fixes (curations, filters), "--output-fixes"
+
 0.3.6
 -----------------
 

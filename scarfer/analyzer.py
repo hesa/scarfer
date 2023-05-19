@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Henrik Sandklef
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 import re
 from enum import Enum
 from license_expression import Licensing, LicenseSymbol
