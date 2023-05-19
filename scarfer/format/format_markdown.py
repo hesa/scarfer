@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 Henrik Sandklef
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 from scarfer.format.format_text import TextFormatter
 #from scarfer.format.interface import FormatInterface

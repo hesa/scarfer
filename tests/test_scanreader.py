@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Henrik Sandklef
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 import unittest
 
 from scarfer.scan_interface import ScanReportReader

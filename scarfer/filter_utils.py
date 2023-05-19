@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Henrik Sandklef
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 from scarfer.analyzer import ScanReportFilter
 from scarfer.analyzer import ScanReportFilterType
 

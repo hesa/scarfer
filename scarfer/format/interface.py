@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 Henrik Sandklef
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 class Settings:
     def __init__(self, copyrights = False, licenses = False, matches = False, cumulative = False, license_summary = False, copyright_summary = False):

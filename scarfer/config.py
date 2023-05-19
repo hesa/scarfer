@@ -1,6 +1,10 @@
+# SPDX-FileCopyrightText: 2023 Henrik Sandklef
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 import os
 
-scarfer_version = "0.3.8"
+scarfer_version = "0.3.9"
 scarfer_name = "scarfer"
 
 TOP_DIR = os.path.dirname(os.path.realpath(__file__))
