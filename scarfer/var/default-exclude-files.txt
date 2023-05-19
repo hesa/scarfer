@@ -18,11 +18,12 @@ autom4te\.cache/
 \.deps/
 ChangeLog[\.\-\w]*
 Changelog[\.\-\w]*
+CHANGELOG[\.\-\w]*
 README[\.\-\w]*
 ABOUT[\.\-\w]*
 FAQ[\.\-\w]*
 TODO[\.\-\w]*
-MANIFEST
+MANIFEST[\.\-\w]*
 BUILD[\.\-\w]*
 USAGE[\.\-\w]*
 OWNERS[\.\-\w]*
@@ -39,6 +40,7 @@ tests/
 test/
 __test__/
 __tests__/
+\.coveragerc
 
 # documentation
 doc/
