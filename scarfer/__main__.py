@@ -358,7 +358,7 @@ def main():
     elif args['cumulative']:
         formatted_data = formatter.format_cumulative(filtered_files, settings)
     elif args['output_fixes']:
-        formatted_data = formatter.format_fixes(reader.fixes(), settings)
+        formatted_data = formatter.format_fixes(analyzer.fixes(), settings)
     else:
         formatted_data = formatter.format(filtered_files, settings)
 
