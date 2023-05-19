@@ -48,6 +48,10 @@ class ScanReportReader:
         self.report_data = None
         self.schema = None
 
+
+    def report_file(self):
+        return self.file_name
+        
     def validate(self):
         if not self.schema:
             schema_file = os.path.join(os.path.join(SCRIPT_DIR, "var"), "normalized-scan.json")
@@ -59,13 +63,16 @@ class ScanReportReader:
         clazzes = [ FakeReportReader, ScancodeReportReader ]
         self.data = None
         for clazz in clazzes:
+            exceptions = []
             try:
                 self.data = clazz(self.file_name).read()
                 break
+            except FileNotFoundError as e:
+                raise(ScanReportException(f'File {self.file_name} not found'))
             except Exception as e:
-                pass
+                exceptions.append(e)
         if self.data == None:
-            raise(ScanReportException(f"File {self.file_name} not in a supported format"))
+            raise(ScanReportException(f'File {self.file_name} not in a supported format. Exceptions caught: {exceptions}'))
         
         return self.data
 
