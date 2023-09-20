@@ -12,7 +12,6 @@ import os
 
 from scarfer.format.factory import FormatFactory
 from scarfer.scan_interface import ScanReportReader
-from scarfer.scan_interface import ScanReportException
 from scarfer.analyzer import Analyzer
 from scarfer.format.interface import Settings
 from scarfer.filter_utils import create_filters
@@ -40,7 +39,7 @@ PROGRAM_SEE_ALSO = ""
 OUTPUT_FORMAT_JSON = "JSON"
 OUTPUT_FORMAT_TEXT = "text"
 OUTPUT_FORMAT_YAML = "text"
-OUTPUT_FORMATS = [ OUTPUT_FORMAT_JSON, OUTPUT_FORMAT_TEXT, OUTPUT_FORMAT_YAML ]
+OUTPUT_FORMATS = [OUTPUT_FORMAT_JSON, OUTPUT_FORMAT_TEXT, OUTPUT_FORMAT_YAML]
 
 DATE_FMT = '%Y-%m-%d'
 
@@ -48,7 +47,7 @@ def parse():
 
     description = f'NAME\n  {PROGRAM_NAME} ({PROGRAM_VERSION})\n\n'
     description = description + "DESCRIPTION\n  " + PROGRAM_DESCRIPTION + "\n\n"
-    
+
     epilog = ""
     epilog = epilog + "EXAMPLES\n\n" + PROGRAM_EXAMPLES + "\n\n"
     epilog = epilog + "SUPPORTED SCAN REPORT FORMATS\n" + PROGRAM_SUPPORTED_FORMATS + "\n\n"
@@ -56,7 +55,7 @@ def parse():
     epilog = epilog + "REPORTING BUGS\n  File a ticket at " + PROGRAM_URL + "\n\n"
     epilog = epilog + "COPYRIGHT\n  Copyright " + PROGRAM_COPYRIGHT + ".\n  License " + PROGRAM_LICENSE + "\n\n"
     epilog = epilog + "SEE ALSO\n  " + PROGRAM_SEE_ALSO + "\n\n"
-    
+
     parser = argparse.ArgumentParser(
         description=description,
         epilog=epilog,
@@ -67,84 +66,98 @@ def parse():
                         type=str,
                         help='Scan report to use',
                         default=None)
-    
+
     parser.add_argument('--normalize',
                         action='store_true',
                         help='quit after scan report normalization and outpout result',
                         default=False)
-    
+
     parser.add_argument('-m', '--matched-text',
-                            action='store_true',
-                            help='output information about license matches',
-                            default=False)
-    
+                        action='store_true',
+                        help='output information about license matches',
+                        default=False)
+
     parser.add_argument('-c', '--copyrights',
-                            action='store_true',
-                            help='output information about copyrights',
-                            default=False)
-    
+                        action='store_true',
+                        help='output information about copyrights',
+                        default=False)
+
     parser.add_argument('-cu', '--cumulative',
-                            action='store_true',
-                            help='outpur cumulative license information',
-                            default=False)
-    
+                        action='store_true',
+                        help='outpur cumulative license information',
+                        default=False)
+
     parser.add_argument('-l', '--license',
-                            action='store_true',
-                            help='output information about license',
-                            default=False)
-    
+                        action='store_true',
+                        help='output information about license',
+                        default=False)
+
     parser.add_argument('-ls', '--license-summary',
-                            action='store_true',
-                            help='output license summary',
-                            default=False)
-    
+                        action='store_true',
+                        help='output license summary',
+                        default=False)
+
     parser.add_argument('-cs', '--copyright-summary',
-                            action='store_true',
-                            help='output copyright summary',
-                            default=False)
-    
+                        action='store_true',
+                        help='output copyright summary',
+                        default=False)
+
     parser.add_argument('-il', '--include-license',
-                            type=str,
-                            nargs="+",
-                            action='append',
-                            help='filter on licenses containing argument',
-                            default=[])
-    
+                        type=str,
+                        nargs="+",
+                        action='append',
+                        help='filter on licenses containing argument',
+                        default=[])
+
     parser.add_argument('-el', '--exclude-license',
-                            type=str,
-                            action='append',
-                            nargs="+",
-                            help='filter out licenses containing argument',
-                            default=[])
-    
+                        type=str,
+                        action='append',
+                        nargs="+",
+                        help='filter out licenses containing argument',
+                        default=[])
+
+    parser.add_argument('-ic', '--include-copyright',
+                        type=str,
+                        nargs="+",
+                        action='append',
+                        help='filter on copyrights containing argument',
+                        default=[])
+
+    parser.add_argument('-ec', '--exclude-copyright',
+                        type=str,
+                        action='append',
+                        nargs="+",
+                        help='filter out copyright containing argument',
+                        default=[])
+
     parser.add_argument('-if', '--include-file',
-                            type=str,
-                            action='append',
-                            nargs="+",
-                            help='filter on file containing argument',
-                            default=[])
-    
+                        type=str,
+                        action='append',
+                        nargs="+",
+                        help='filter on file containing argument',
+                        default=[])
+
     parser.add_argument('-ef', '--exclude-file',
-                            type=str,
-                            action='append',
-                            nargs="+",
-                            help='filter out on file containing argument',
-                            default=[])
-    
+                        type=str,
+                        action='append',
+                        nargs="+",
+                        help='filter out on file containing argument',
+                        default=[])
+
     parser.add_argument('-iff', '--include-file-file',
-                            type=str,
-                            action='append',
-                            nargs="+",
-                            help='filter on file containing file filters',
-                            default=[])
-    
+                        type=str,
+                        action='append',
+                        nargs="+",
+                        help='filter on file containing file filters',
+                        default=[])
+
     parser.add_argument('-eff', '--exclude-file-file',
-                            type=str,
-                            action='append',
-                            nargs="+",
-                            help='filter out on file containing file filters',
-                            default=[])
-    
+                        type=str,
+                        action='append',
+                        nargs="+",
+                        help='filter out on file containing file filters',
+                        default=[])
+
     parser.add_argument('-dde', '--disable-default-excludes',
                         action='store_true',
                         help=f'Disable exclusion of files as specified in {DEFAULT_FILE_EXCLUDE_FILE}')
@@ -155,7 +168,7 @@ def parse():
                         action='append',
                         help='curate missing license for a file with',
                         default=[])
-    
+
     parser.add_argument('-cfl', '--curate-file-license',
                         type=str,
                         dest='curate_file_license',
@@ -163,40 +176,41 @@ def parse():
                         action='append',
                         help='curate license for a file with: file1 file2 curated-license',
                         default=[])
-    
+
     parser.add_argument('-f', '--format',
-                            type=str,
-                            help='output result in specified format, default is ' + OUTPUT_FORMAT_TEXT,
-                            default=OUTPUT_FORMAT_TEXT)
+                        type=str,
+                        help='output result in specified format, default is ' + OUTPUT_FORMAT_TEXT,
+                        default=OUTPUT_FORMAT_TEXT)
 
     parser.add_argument('--output-fixes',
                         dest='output_fixes',
                         action='store_true',
                         help='output files filtered out and curations')
 
-    parser.add_argument('--version', '-V', action='version', version="{name}: {version}".format(name=scarfer_name, version=scarfer_version))
+    parser.add_argument('--version', '-V',
+                        action='version',
+                        version="{name}: {version}".format(name=scarfer_name, version=scarfer_version))
 
     parser.add_argument('-v', '--verbose',
-                            action='store_true',
-                            help='output verbose information to stderr',
-                            default=False)
-    
+                        action='store_true',
+                        help='output verbose information to stderr',
+                        default=False)
+
     parser.add_argument('-oc', '--output--config',
                         action='store_true',
                         dest="output_config",
                         help='output command line options as configuration',
                         default=False)
-    
+
     parser.add_argument('--config',
                         type=str,
                         dest="read_config",
                         help='read configuration from file',
                         default=False)
-    
+
     args = parser.parse_args()
 
     return args
-
 
 def _merge_file_filters(clude_file, clude_file_file):
     new_filters = []
@@ -209,19 +223,19 @@ def _merge_file_filters(clude_file, clude_file_file):
         for file_name in file_name_list:
             f = open(file_name, 'r')
             for line in f.readlines():
-                stripped_line = line.strip().replace("\n","")
+                stripped_line = line.strip().replace("\n", "")
                 if not stripped_line.startswith("#") and len(stripped_line) > 0:
                     reg_exp = stripped_line
                     if not stripped_line.endswith("/"):
                         reg_exp = stripped_line + "$"
                     new_filters.append(reg_exp)
- 
+
     return new_filters
 
 def flatten_lists(lists):
     new_list = []
-    for l in lists:
-        for elem in l:
+    for le in lists:
+        for elem in le:
             new_list.append(elem)
     return new_list
 
@@ -229,33 +243,35 @@ def _output_config(args):
     config = {
         'tool_name': scarfer_name,
         'tool_version': scarfer_version,
-#        "copyrights": args.copyrights,
-#        "cumulative": args.cumulative,
+        #        "copyrights": args.copyrights,
+        #        "cumulative": args.cumulative,
         "curate_missing_license": args.curate_missing_license,
         "curate_file_license": args.curate_file_license,
         "exclude_file": args.exclude_file,
         "exclude_file_file": args.exclude_file_file,
         "exclude_license": args.exclude_license,
+        "exclude_copyright": args.exclude_copyright,
         "file": args.file,
-#        "format": args.format,
+        #        "format": args.format,
         "include_file": args.include_file,
         "include_file_file": args.include_file_file,
         "include_license": args.include_license,
-#        "license": args.license,
-#        "license_summary": args.license_summary,
-#        "matched_text": args.matched_text
-        }
+        "include_copyright": args.include_copyright,
+        #        "license": args.license,
+        #        "license_summary": args.license_summary,
+        #        "matched_text": args.matched_text
+    }
     return json.dumps(config, indent=4)
-        
+
 def _read_config(config_file, args):
     new_args = {}
-        
+
     for key in args.__dict__:
         new_args[key] = vars(args).get(key)
 
     if not args.read_config:
         return new_args
-    
+
     with open(config_file) as conf:
         confs = json.load(conf)
 
@@ -270,22 +286,20 @@ def _read_config(config_file, args):
         conf_val = new_args.get(key)
         print(f'{key}: {args_val} : {conf_val}')
         if args_val == conf_val:
-            #print(f'key {key} same')
             pass
         elif key not in args:
             print(f'key {key} not found')
             pass
         else:
             print(f'key {key} differs:  conf: {conf_val}')
-            if isinstance(conf_val,list):
+            if isinstance(conf_val, list):
                 new_args[key] += args_val
             else:
                 new_args[key] = args_val
             print(f'key {key} now: {new_args[key]}')
-        
 
 def main():
-    
+
     args = parse()
 
     if args.verbose:
@@ -294,10 +308,10 @@ def main():
     if args.output_config:
         print(_output_config(args))
         sys.exit(0)
-        
+
     args = _read_config(args.read_config, args)
 
-    # Create scan report reader 
+    # Create scan report reader
     reader = ScanReportReader(args['file'])
 
     # Get a normalized report
@@ -311,27 +325,28 @@ def main():
         reader.validate()
         print(json.dumps(normalized_report, indent=4))
         sys.exit(0)
-    
+
     include_license = flatten_lists(args['include_license'])
     exclude_license = flatten_lists(args['exclude_license'])
-    #exclude_file = flatten_lists(args['exclude_file)
-    
+    include_copyright = flatten_lists(args['include_copyright'])
+    exclude_copyright = flatten_lists(args['exclude_copyright'])
+    # exclude_file = flatten_lists(args['exclude_file)
     # Create filters
     include_files = _merge_file_filters(args['include_file'], args['include_file_file'])
-    filters = create_filters(include_license, include_files)
+    filters = create_filters(include_license, include_copyright, include_files)
 
     if args['disable_default_excludes']:
         pass
     else:
         args['exclude_file_file'].append([DEFAULT_FILE_EXCLUDE_FILE])
     exclude_files = _merge_file_filters(args['exclude_file'], args['exclude_file_file'])
-    exclude_filters = create_filters(exclude_license, exclude_files)
-    
-#    print(f"include_files:   {include_files}")
-#    print(f"include_filters: {filters}")
-#    print(f"exclude_files:   {exclude_files}")
-#    print(f"exclude_filters: {exclude_filters}")
-    
+    exclude_filters = create_filters(exclude_license, exclude_copyright, exclude_files)
+
+    #    print(f"include_files:   {include_files}")
+    # print(f"include_filters: {filters}")
+    #    print(f"exclude_files:   {exclude_files}")
+    # print(f"exclude_filters: {exclude_filters}")
+
     # Create output formatter
     formatter = FormatFactory.formatter(args['format'])
 
@@ -344,17 +359,17 @@ def main():
 
     #
     # Curations
-    # 
+    #
     if args['curate_missing_license']:
         analyzer.curate_missing_license(args['curate_missing_license'])
     if args['curate_file_license']:
         for curation in args["curate_file_license"]:
             length = len(curation)
-            nr_files = length -1
+            nr_files = length - 1
             curated_license = curation[nr_files]
             files = curation[0:nr_files]
             analyzer.curate_file_license(files, curated_license)
-            
+
     filtered_files = analyzer.report()
 
     # Format the data
@@ -375,6 +390,6 @@ def main():
     # Print the data
     print(formatted_data)
 
+
 if __name__ == '__main__':
     main()
-    
