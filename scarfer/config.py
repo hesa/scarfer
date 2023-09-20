@@ -4,7 +4,7 @@
 
 import os
 
-scarfer_version = "0.4"
+scarfer_version = "0.4.1"
 scarfer_name = "scarfer"
 
 TOP_DIR = os.path.dirname(os.path.realpath(__file__))

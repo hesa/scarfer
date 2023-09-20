@@ -251,7 +251,7 @@ def _output_config(args):
         "exclude_file_file": args.exclude_file_file,
         "exclude_license": args.exclude_license,
         "exclude_copyright": args.exclude_copyright,
-        "file": args.file,
+        # "file": args.file,
         #        "format": args.format,
         "include_file": args.include_file,
         "include_file_file": args.include_file_file,
