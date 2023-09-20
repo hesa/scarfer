@@ -3,12 +3,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import unittest
-
-CAIRO_REPORT="example-data/scancode/no-format/cairo-1.16.0-scan.json"
-
 from scarfer.format.factory import FormatFactory
 from scarfer.scan_interface import ScanReportReader
 
+CAIRO_REPORT = "example-data/scancode/no-format/cairo-1.16.0-scan.json"
 
 class TestScancodeReader(unittest.TestCase):
 
@@ -24,6 +22,7 @@ class TestScancodeReader(unittest.TestCase):
         self.assertIsNotNone(formatter)
         formatter = FormatFactory.formatter("JSON")
         self.assertIsNotNone(formatter)
+
 
 if __name__ == '__main__':
     unittest.main()

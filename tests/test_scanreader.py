@@ -17,6 +17,6 @@ class TestScanReader(unittest.TestCase):
             reader = ScanReportReader("bad-path")
             reader.read()
 
-        
+
 if __name__ == '__main__':
     unittest.main()
