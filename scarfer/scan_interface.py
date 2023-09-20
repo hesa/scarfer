@@ -6,9 +6,6 @@ import json
 import jsonschema
 import os
 
-from scarfer.format.factory import FormatFactory
-#from format import FormatInterface
-
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -40,46 +37,45 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 #     "copytights": "combined copyrights"
 #   }
 
-            
+
 class ScanReportReader:
-    
+
     def __init__(self, file_name):
         self.file_name = file_name
         self.report_data = None
         self.schema = None
 
-
     def report_file(self):
         return self.file_name
-        
+
     def validate(self):
         if not self.schema:
             schema_file = os.path.join(os.path.join(SCRIPT_DIR, "var"), "normalized-scan.json")
             with open(schema_file, 'r') as f:
                 self.schema = json.load(f)
             jsonschema.validate(instance=self.data, schema=self.schema)
-        
+
     def read(self):
-        clazzes = [ FakeReportReader, ScancodeReportReader ]
+        clazzes = [FakeReportReader, ScancodeReportReader]
         self.data = None
         for clazz in clazzes:
             exceptions = []
             try:
                 self.data = clazz(self.file_name).read()
                 break
-            except FileNotFoundError as e:
-                raise(ScanReportException(f'File {self.file_name} not found'))
+            except FileNotFoundError:
+                raise (ScanReportException(f'File {self.file_name} not found'))
             except Exception as e:
                 exceptions.append(e)
-        if self.data == None:
-            raise(ScanReportException(f'File {self.file_name} not in a supported format. Exceptions caught: {exceptions}'))
-        
+        if self.data is None:
+            raise (ScanReportException(f'File {self.file_name} not in a supported format. Exceptions caught: {exceptions}'))
+
         return self.data
 
     def __str__(self):
         ret = ["path: {name}".format(name=self.file_name)]
         return '\n'.join(ret)
-            
+
 class ScanReportException(Exception):
 
     def __init__(self, message=""):
@@ -89,8 +85,8 @@ class ScanReportException(Exception):
 class FakeReportReader(ScanReportReader):
 
     def read(self):
-        raise(ScanReportException("File not in fake format"))
-        
+        raise (ScanReportException("File not in fake format"))
+
 class ScancodeReportReader(ScanReportReader):
 
     def check_file_format(self):
@@ -98,7 +94,7 @@ class ScancodeReportReader(ScanReportReader):
         tool = headers['tool_name']
         self.scancode_format = headers.get('output_format_version', '')
         if tool.lower() != "scancode-toolkit":
-            raise(ScanReportException(f'File not in Scancode format. Tool={tool}'))
+            raise (ScanReportException(f'File not in Scancode format. Tool={tool}'))
 
         if self.scancode_format == "2.0.0":
             self.copyright_value = "copyright"
@@ -106,7 +102,7 @@ class ScancodeReportReader(ScanReportReader):
             self.copyright_value = "value"
         self.tool = headers['tool_name']
         self.tool_version = headers['tool_version']
-    
+
     def read(self):
         with open(self.file_name) as fp:
             import json
@@ -116,38 +112,37 @@ class ScancodeReportReader(ScanReportReader):
 
         files = []
 
-
         for f in self.files:
             if not f['type'] == "file":
                 continue
-            
+
             _file = {}
-            
+
             # path
-            _file['path'] = f.get('path','')
-            _file['sha1'] = f.get('sha1','')
-            _file['md5'] = f.get('md5','')
-            _file['sha256'] = f.get('sha256','')
+            _file['path'] = f.get('path', '')
+            _file['sha1'] = f.get('sha1', '')
+            _file['md5'] = f.get('md5', '')
+            _file['sha256'] = f.get('sha256', '')
 
             # copyright
             _file['copyrights'] = []
             for c in f['copyrights']:
-                #print(" c: " + str(c) + "  reading: " + self.copyright_value)
+                # print(" c: " + str(c) + "  reading: " + self.copyright_value)
                 _file['copyrights'].append(c[self.copyright_value])
                 pass
 
             # license
             _file['license'] = {}
             matches = []
-            for l in f['licenses']:
-                if 'key' in l and 'matched_text' in l:
+            for le in f['licenses']:
+                if 'key' in le and 'matched_text' in le:
                     matches.append({
-                        "key": l['key'],
-                        "text": l['matched_text']
+                        "key": le['key'],
+                        "text": le['matched_text']
                     })
             _file['license']['expressions'] = f['license_expressions']
             _file['license']['matches'] = matches
-            
+
             files.append(_file)
 
         meta = {

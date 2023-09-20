@@ -17,6 +17,6 @@ class TestFormatter(unittest.TestCase):
         formatter = FormatFactory.formatter("JSON")
         self.assertIsNotNone(formatter)
 
-        
+
 if __name__ == '__main__':
     unittest.main()

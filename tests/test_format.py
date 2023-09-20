@@ -15,6 +15,6 @@ class TestFormatter(unittest.TestCase):
         formatter = FormatFactory.formatter("ssss")
         self.assertIsNone(formatter)
 
-        
+
 if __name__ == '__main__':
     unittest.main()
