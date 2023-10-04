@@ -98,7 +98,12 @@ class ScancodeReportReader(ScanReportReader):
 
         if self.scancode_format == "2.0.0":
             self.copyright_value = "copyright"
+            self.licenses_value = "licenses"
+        elif self.scancode_format == "3.0.0":
+            self.copyright_value = "copyright"
+            self.licenses_value = "license_detections"
         else:
+            self.licenses_value = "licenses"
             self.copyright_value = "value"
         self.tool = headers['tool_name']
         self.tool_version = headers['tool_version']
@@ -134,13 +139,17 @@ class ScancodeReportReader(ScanReportReader):
             # license
             _file['license'] = {}
             matches = []
-            for le in f['licenses']:
+            for le in f[self.licenses_value]:
                 if 'key' in le and 'matched_text' in le:
                     matches.append({
                         "key": le['key'],
                         "text": le['matched_text']
                     })
-            _file['license']['expressions'] = f['license_expressions']
+
+            if self.scancode_format == "3.0.0":
+                _file['license']['expressions'] = [ f['detected_license_expression'] ]
+            else:
+                _file['license']['expressions'] = f['license_expressions']
             _file['license']['matches'] = matches
 
             files.append(_file)
