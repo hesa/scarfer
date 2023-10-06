@@ -17,3 +17,14 @@ reuse-lint:
 	reuse --suppress-deprecation lint
 
 lint: py-lint reuse-lint
+
+release:
+	-find . -name "*~" | xargs rm 
+	-rm -fr dist
+	python3 setup.py sdist
+	@echo
+	@echo
+	@echo
+	@echo "Version: `PYTHONPATH=. ./scarfer/__main__.py --version`"
+	@echo "Remaining command: "
+	@echo "twine upload --repository scarfer --verbose  dist/*"
