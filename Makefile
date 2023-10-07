@@ -12,3 +12,8 @@ py-test:
 
 py-lint:
 	flake8
+
+reuse-lint:
+	reuse --suppress-deprecation lint
+
+lint: py-lint reuse-lint
