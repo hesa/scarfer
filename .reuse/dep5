@@ -1,0 +1,37 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: scarfer
+Upstream-Contact: Henrik Sandklef <hesa@sandklef.com>
+Source: https://github.com/hesa/scarfer
+
+Files: example-data/**
+Copyright: Henrik Sandklef
+License: CC-BY-4.0
+
+Files: scarfer/var/default-exclude-files.txt
+Copyright: Henrik Sandklef
+License: GPL-3.0-or-later
+
+Files: .github/**
+Copyright: Henrik Sandklef
+License: GPL-3.0-or-later
+
+Files: devel/**
+Copyright: Henrik Sandklef
+License: GPL-3.0-or-later
+
+Files: scarfer/var/*.json
+Copyright: Henrik Sandklef
+License: GPL-3.0-or-later
+
+Files: NEWS
+Copyright: Henrik Sandklef
+License: GPL-3.0-or-later
+
+Files: README*
+Copyright: Henrik Sandklef
+License: GPL-3.0-or-later
+
+Files: DESCRIPTION*
+Copyright: Henrik Sandklef
+License: GPL-3.0-or-later
+
