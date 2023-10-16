@@ -18,6 +18,8 @@ reuse-lint:
 
 lint: py-lint reuse-lint
 
+check: py-check py-lint reuse-lint
+
 release:
 	-find . -name "*~" | xargs rm 
 	-rm -fr dist
