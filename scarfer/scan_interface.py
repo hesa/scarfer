@@ -147,7 +147,10 @@ class ScancodeReportReader(ScanReportReader):
                     })
 
             if self.scancode_format == "3.0.0":
-                _file['license']['expressions'] = [ f['detected_license_expression'] ]
+                if f['detected_license_expression']:
+                    _file['license']['expressions'] = [ f['detected_license_expression'] ]
+                else:
+                    _file['license']['expressions'] = []
             else:
                 _file['license']['expressions'] = f['license_expressions']
             _file['license']['matches'] = matches
