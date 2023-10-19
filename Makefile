@@ -3,7 +3,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 clean:
-	find . -name "*~" | xargs rm 
+	-find . -name "*~" | xargs rm -f
+	-find . -type d -name "__pycache__" | xargs rm -fr
+	-find . -type d -name "scarfer.egg-info" | xargs rm -fr
+	-rm -fr dist
 
 py-check: py-lint py-test
 
@@ -18,9 +21,9 @@ reuse-lint:
 
 lint: py-lint reuse-lint
 
-release:
-	-find . -name "*~" | xargs rm 
-	-rm -fr dist
+check: py-check py-lint reuse-lint
+
+release: check clean
 	python3 setup.py sdist
 	@echo
 	@echo

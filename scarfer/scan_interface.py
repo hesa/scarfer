@@ -110,7 +110,6 @@ class ScancodeReportReader(ScanReportReader):
 
     def read(self):
         with open(self.file_name) as fp:
-            import json
             self.json_data = json.load(fp)
             self.check_file_format()
             self.files = self.json_data['files']
@@ -134,21 +133,27 @@ class ScancodeReportReader(ScanReportReader):
             for c in f['copyrights']:
                 # print(" c: " + str(c) + "  reading: " + self.copyright_value)
                 _file['copyrights'].append(c[self.copyright_value])
-                pass
 
             # license
             _file['license'] = {}
             matches = []
             for le in f[self.licenses_value]:
-                if 'key' in le and 'matched_text' in le:
-                    matches.append({
-                        "key": le['key'],
-                        "text": le['matched_text']
-                    })
+                if self.scancode_format == "3.0.0":
+                    for match in le['matches']:
+                        matches.append({
+                            "key": match['license_expression'],
+                            "text": match['matched_text']
+                        })
+                else:
+                    if 'key' in le and 'matched_text' in le:
+                        matches.append({
+                            "key": le['key'],
+                            "text": le['matched_text']
+                        })
 
             if self.scancode_format == "3.0.0":
                 if f['detected_license_expression']:
-                    _file['license']['expressions'] = [ f['detected_license_expression'] ]
+                    _file['license']['expressions'] = [f['detected_license_expression']]
                 else:
                     _file['license']['expressions'] = []
             else:
