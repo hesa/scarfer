@@ -84,7 +84,7 @@ def parse():
 
     parser.add_argument('-cu', '--cumulative',
                         action='store_true',
-                        help='outpur cumulative license information',
+                        help='output cumulative license information',
                         default=False)
 
     parser.add_argument('-l', '--license',
