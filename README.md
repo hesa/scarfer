@@ -31,7 +31,7 @@ Scarfer can output the following summaries
 
 Scarfer can filter files:
 
-* include 
+* include files with:
 
     * license name (`-il`) using Python's regular expressions
 
@@ -39,13 +39,17 @@ Scarfer can filter files:
 
     * files (`-iff`) by reading a file, containing file names, using Python's regular expressions
 
-* exclude
+    * copyright (`-ec`) using Python's regular expressions
+
+* exclude files with:
 
     * license name (`-el`) using Python's regular expressions
 
     * files (`-ef`) using Python's regular expressions
 
     * files (`-eff`) by reading a file, containing file names, using Python's regular expressions
+
+    * copyright (`-ec`) using Python's regular expressions
 
 *Note: if you're using more than one filter then filters are AND:ed together*
 
