@@ -107,8 +107,19 @@ $ scarfer example-data/cairo-1.16.0-scan.json -ef "/.*pdi.*\.c$"
 
 * [Scancode](https://github.com/nexB/scancode-toolkit) Output Format version 1.0.0, 2.0.0
 
+# Hints on source code scanners
 
+## Scancode 32.0*
 
+Assuming you want to scan a directory called `cairo` and store the output in `cairo-scan.json`:
+
+```
+scancode -clipe \
+  --license-text   --license-text-diagnostics        \
+  --classify       --license-clarity-score --summary \
+  -n $(cat /proc/cpuinfo | grep processor | wc -l)   \
+  --json-pp cairo-scan.json cairo
+```
 
 
 
