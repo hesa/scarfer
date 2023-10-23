@@ -31,7 +31,7 @@ Scarfer can output the following summaries
 
 Scarfer can filter files:
 
-* include 
+* include files with:
 
     * license name (`-il`) using Python's regular expressions
 
@@ -39,13 +39,17 @@ Scarfer can filter files:
 
     * files (`-iff`) by reading a file, containing file names, using Python's regular expressions
 
-* exclude
+    * copyright (`-ec`) using Python's regular expressions
+
+* exclude files with:
 
     * license name (`-el`) using Python's regular expressions
 
     * files (`-ef`) using Python's regular expressions
 
     * files (`-eff`) by reading a file, containing file names, using Python's regular expressions
+
+    * copyright (`-ec`) using Python's regular expressions
 
 *Note: if you're using more than one filter then filters are AND:ed together*
 
@@ -103,8 +107,19 @@ $ scarfer example-data/cairo-1.16.0-scan.json -ef "/.*pdi.*\.c$"
 
 * [Scancode](https://github.com/nexB/scancode-toolkit) Output Format version 1.0.0, 2.0.0
 
+# Hints on source code scanners
 
+## Scancode 32.0*
 
+Assuming you want to scan a directory called `cairo` and store the output in `cairo-scan.json`:
+
+```
+scancode -clipe \
+  --license-text   --license-text-diagnostics        \
+  --classify       --license-clarity-score --summary \
+  -n $(cat /proc/cpuinfo | grep processor | wc -l)   \
+  --json-pp cairo-scan.json cairo
+```
 
 
 
