@@ -104,6 +104,7 @@ Gemfile
 \.gitallowed
 \._.gitignore
 \.pre-commit-config\.yaml
+/.git-log-fix
 
 # clang
 \.clang-format
@@ -254,3 +255,10 @@ README\.LZO
 EXAMPLES
 CONTRIBUTIONS
 \.md
+THANKS
+
+
+\.dir-locals.el
+\.git-log-fix
+\.prev-version
+\.x-update-copyright
