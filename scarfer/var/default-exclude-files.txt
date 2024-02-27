@@ -34,6 +34,7 @@ INSTALL
 INSTALL\.generic
 PACKAGERS
 CODEOWNER.[\.\-\w]*
+PKG-INFO
 
 # test code
 tests/
@@ -198,6 +199,7 @@ COPYING
 COPYING3
 COPYING3\.LIB
 LICENSE
+LICENSE\.[a-zA-Z0-9]*
 AUTHORS
 
 # LaTeX, info and texinfo
