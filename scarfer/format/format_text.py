@@ -63,7 +63,7 @@ class TextFormatter(FormatInterface):
         for fi in report['files']:
             for le in fi['license']['expressions']:
                 license_summary.add(le)
-        return f'License:\n {summarize_license(list(license_summary))}\n'
+        return f'License:\n {summarize_license(list(license_summary))}\n' # noqa: E231
 
     def format_copyright_summary(self, report, settings={}):
         copyright_summary = set()
@@ -73,4 +73,4 @@ class TextFormatter(FormatInterface):
         c_list = list(copyright_summary)
         c_list.sort()
         c_string = "\n".join(c_list)
-        return f'Copyrights:\n{c_string}\n'
+        return f'Copyrights:\n{c_string}\n' # noqa: E231
