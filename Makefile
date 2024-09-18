@@ -29,5 +29,3 @@ release: check clean
 	@echo
 	@echo
 	@echo "Version: `PYTHONPATH=. ./scarfer/__main__.py --version`"
-	@echo "Remaining command: "
-	@echo "twine upload --repository scarfer --verbose  dist/*"
