@@ -14,7 +14,7 @@ py-test:
 	PYTHONPATH=. python3 -m unittest
 
 py-lint:
-	flake8
+	flake8 scarfer
 
 reuse-lint:
 	reuse --suppress-deprecation lint

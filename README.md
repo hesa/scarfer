@@ -105,7 +105,7 @@ $ scarfer example-data/cairo-1.16.0-scan.json -ef "/.*pdi.*\.c$"
 
 * [Scancode](https://github.com/nexB/scancode-toolkit) Toolkit, version 21 and upwards
 
-* [Scancode](https://github.com/nexB/scancode-toolkit) Output Format version 1.0.0, 2.0.0
+* [Scancode](https://github.com/nexB/scancode-toolkit) Output Format version 1.0.0, 2.0.0, 3.0.*, 3.2.*
 
 # Hints on source code scanners
 

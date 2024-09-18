@@ -102,7 +102,7 @@ class Analyzer:
 
         licenses_with_parenthesises = []
         for le in licenses:
-            licenses_with_parenthesises.append(f" ( {le} )")
+            licenses_with_parenthesises.append(f' ( {le} )') # noqa: E201, E202
         # print(f"\nlic par:     {licenses_with_parenthesises}")
         license_string = " and ".join(licenses_with_parenthesises)
         licensing = Licensing()

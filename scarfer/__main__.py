@@ -280,24 +280,6 @@ def _read_config(config_file, args):
 
     return new_args
 
-    # 0xDEADC0DE
-    for key in args.__dict__:
-        args_val = vars(args)[key]
-        conf_val = new_args.get(key)
-        print(f'{key}: {args_val} : {conf_val}')
-        if args_val == conf_val:
-            pass
-        elif key not in args:
-            print(f'key {key} not found')
-            pass
-        else:
-            print(f'key {key} differs:  conf: {conf_val}')
-            if isinstance(conf_val, list):
-                new_args[key] += args_val
-            else:
-                new_args[key] = args_val
-            print(f'key {key} now: {new_args[key]}')
-
 def main():
 
     args = parse()
