@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import fnmatch
 import re
 from enum import Enum
 from license_expression import Licensing
@@ -35,15 +36,29 @@ class ScanReportFilter:
 
 class Analyzer:
 
-    def __init__(self, report):
+    def __init__(self, report, file_matcher='re'):
         self.normaliazed_report = report
         self.data = report['files']
         self.schema = None
+        self.file_matcher = file_matcher
 
+    def _file_match(self, file_name, expr):
+        if self.file_matcher == 'fnmatch':
+            ret = fnmatch.fnmatch(file_name, expr)
+        else:
+            ret = expr in file_name
+        return ret 
+        
+    def _filter_match(self, filt, item):
+        if self.file_matcher == 'fnmatch':
+            ret = fnmatch.fnmatch(item, filt.expr)
+        else:
+            ret = re.search(filt.expr, item) is not None
+        return ret 
+        
     def _apply_filter_file(self, filt, f):
         if filt.type == ScanReportFilterType.FILE:
-            ret = re.search(filt.expr, f['path'])
-            return ret is not None
+            return self._filter_match(filt, f['path'])
         elif filt.type == ScanReportFilterType.LICENSE:
             if len(f['license']['expressions']) == 0:
                 if filt.expr == "missing":
@@ -129,8 +144,9 @@ class Analyzer:
     def curate_file_license(self, files, curated_license):
         for curated_file in files:
             for f in self.data:
-                if curated_file in f['path']:
-                    # print(f'------ file: {f["path"]}')
+                if self._file_match(f['path'], curated_file):
+                    #if curated_file in f['path']:
+                    #print(f'------ file: {f["path"]}')
                     orig = f['license']['expressions']
                     f['license']['expressions'] = [curated_license]
                     self.report_data['fixes']['curated_licenses'].append(
