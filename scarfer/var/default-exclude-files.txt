@@ -35,10 +35,13 @@ INSTALL\.generic
 PACKAGERS
 CODEOWNER.[\.\-\w]*
 PKG-INFO
+NOTICE
+RELEASING.[\.\-\w]*
 
 # test code
 tests/
 test/
+testing/
 __test__/
 __tests__/
 \.coveragerc
@@ -242,7 +245,9 @@ NEWS
 ChangeLog
 ChangeLog-2007
 ChangeLog-2009
-CONTRIBUTING
+CONTRIBUTING[\.\-\w]*
+CITATION[\.\-\w]*
+TIDELIFT.rst
 README
 CommitLog
 CommitLog-4\.1\.0
