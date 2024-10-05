@@ -7,8 +7,11 @@
 from argparse import RawTextHelpFormatter
 import argparse
 import json
+import yaml
 import sys
 import os
+
+import flict
 
 from scarfer.format.factory import FormatFactory
 from scarfer.scan_interface import ScanReportReader
@@ -208,6 +211,12 @@ def parse():
                         help='read configuration from file',
                         default=False)
 
+    parser.add_argument('--simplify',
+                        action='store_true',
+                        dest="simplify",
+                        help='simplify license expressions',
+                        default=False)
+
     args = parser.parse_args()
 
     return args
@@ -265,6 +274,7 @@ def _output_config(args):
 
 def _read_config(config_file, args):
     new_args = {}
+    new_args['file_matcher'] = 're'
 
     for key in args.__dict__:
         new_args[key] = vars(args).get(key)
@@ -272,8 +282,25 @@ def _read_config(config_file, args):
     if not args.read_config:
         return new_args
 
-    with open(config_file) as conf:
-        confs = json.load(conf)
+    cfile_lower = config_file.lower()
+    if cfile_lower.endswith('.json'):
+        new_args['file_matcher'] = 're'
+        with open(config_file) as conf:
+            confs = json.load(conf)
+    elif cfile_lower.endswith('.yml') or cfile_lower.endswith('.yaml'):
+        new_args['file_matcher'] = 'fnmatch'
+        with open(config_file) as conf:
+            conf = yaml.safe_load(conf)
+            exclude_files = []
+            file_curations = []
+            for curation in conf['curate_patterns']:
+                for curation_key in curation.keys():
+                    file_curations.append( [curation_key, curation[curation_key] ])
+            confs = {
+                'curate_missing_license':[],
+                'curate_file_license': file_curations,
+                'exclude_file': [conf['ignore_patterns']]
+            }
 
     for key, value in confs.items():
         new_args[key] = value
@@ -333,10 +360,10 @@ def main():
     formatter = FormatFactory.formatter(args['format'])
 
     # Create settings map, to pass to apply_filter
-    settings = Settings(args['copyrights'], args['license'], args['matched_text'], args['cumulative'], args['license_summary'], args['copyright_summary'])
+    settings = Settings(args['copyrights'], args['license'], args['matched_text'], args['cumulative'], args['license_summary'], args['copyright_summary'], args['simplify'])
 
     # Filter the data in the report, with the filters
-    analyzer = Analyzer(normalized_report)
+    analyzer = Analyzer(normalized_report, file_matcher=args['file_matcher'])
     analyzer.apply_filters(filters, exclude_filters)
 
     #
@@ -362,6 +389,7 @@ def main():
         if args['license_summary']:
             formatted_data_list.append(formatter.format_license_summary(filtered_files, settings))
         formatted_data = "\n".join(formatted_data_list)
+
     elif args['cumulative']:
         formatted_data = formatter.format_cumulative(filtered_files, settings)
     elif args['output_fixes']:
