@@ -47,15 +47,15 @@ class Analyzer:
             ret = fnmatch.fnmatch(file_name, expr)
         else:
             ret = expr in file_name
-        return ret 
-        
+        return ret
+
     def _filter_match(self, filt, item):
         if self.file_matcher == 'fnmatch':
             ret = fnmatch.fnmatch(item, filt.expr)
         else:
             ret = re.search(filt.expr, item) is not None
-        return ret 
-        
+        return ret
+
     def _apply_filter_file(self, filt, f):
         if filt.type == ScanReportFilterType.FILE:
             return self._filter_match(filt, f['path'])
@@ -145,8 +145,6 @@ class Analyzer:
         for curated_file in files:
             for f in self.data:
                 if self._file_match(f['path'], curated_file):
-                    #if curated_file in f['path']:
-                    #print(f'------ file: {f["path"]}')
                     orig = f['license']['expressions']
                     f['license']['expressions'] = [curated_license]
                     self.report_data['fixes']['curated_licenses'].append(

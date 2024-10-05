@@ -11,8 +11,6 @@ import yaml
 import sys
 import os
 
-import flict
-
 from scarfer.format.factory import FormatFactory
 from scarfer.scan_interface import ScanReportReader
 from scarfer.analyzer import Analyzer
@@ -291,13 +289,12 @@ def _read_config(config_file, args):
         new_args['file_matcher'] = 'fnmatch'
         with open(config_file) as conf:
             conf = yaml.safe_load(conf)
-            exclude_files = []
             file_curations = []
             for curation in conf['curate_patterns']:
                 for curation_key in curation.keys():
-                    file_curations.append( [curation_key, curation[curation_key] ])
+                    file_curations.append([curation_key, curation[curation_key]])
             confs = {
-                'curate_missing_license':[],
+                'curate_missing_license': [],
                 'curate_file_license': file_curations,
                 'exclude_file': [conf['ignore_patterns']]
             }
