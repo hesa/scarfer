@@ -5,6 +5,7 @@
 from scarfer.format.interface import FormatInterface
 from scarfer.format.format_utils import summarize_license
 import os
+from flict.flictlib.arbiter import Arbiter
 
 class TextFormatter(FormatInterface):
 
@@ -63,7 +64,11 @@ class TextFormatter(FormatInterface):
         for fi in report['files']:
             for le in fi['license']['expressions']:
                 license_summary.add(le)
-        return f'License:\n {summarize_license(list(license_summary))}\n' # noqa: E231
+        license_summary = summarize_license(list(license_summary))
+        if settings.get('simplify'):
+            arbiter = Arbiter()
+            license_summary = arbiter.simplify_license(license_summary)['simplified']
+        return f'License:\n {license_summary}\n' # noqa: E231
 
     def format_copyright_summary(self, report, settings={}):
         copyright_summary = set()
