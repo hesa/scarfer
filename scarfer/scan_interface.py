@@ -105,6 +105,9 @@ class ScancodeReportReader(ScanReportReader):
         elif self.scancode_format[:3] == "3.2":
             self.copyright_value = "copyright"
             self.licenses_value = "license_detections"
+        elif self.scancode_format[:3] == "4.0":
+            self.copyright_value = "copyright"
+            self.licenses_value = "license_detections"
         else:
             self.licenses_value = "licenses"
             self.copyright_value = "value"
@@ -160,6 +163,11 @@ class ScancodeReportReader(ScanReportReader):
                 else:
                     _file['license']['expressions'] = []
             elif self.scancode_format[:3] == "3.2":
+                if f['detected_license_expression']:
+                    _file['license']['expressions'] = [f['detected_license_expression']]
+                else:
+                    _file['license']['expressions'] = []
+            elif self.scancode_format[:3] == "4.0":
                 if f['detected_license_expression']:
                     _file['license']['expressions'] = [f['detected_license_expression']]
                 else:
