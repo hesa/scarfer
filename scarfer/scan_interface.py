@@ -144,7 +144,8 @@ class ScancodeReportReader(ScanReportReader):
             _file['license'] = {}
             matches = []
             for le in f[self.licenses_value]:
-                if self.scancode_format == "3.0.0":
+                vers = self.scancode_format[:3] 
+                if vers == "3.0" or vers == "3.2" or vers == "4.0":
                     for match in le['matches']:
                         matches.append({
                             "key": match['license_expression'],
