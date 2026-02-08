@@ -26,7 +26,8 @@ class TextFormatter(FormatInterface):
                 ret.append(" * {c}".format(c=cr))
         if matches:
             for m in f['license']['matches']:
-                ret.append("--- {match} --- ".format(match=m['key']))
+                ret.append("--- Matched license: {match} --- ".format(match=m['key']))
+                ret.append("--- Matched text: ---")
                 ret.append("{text}".format(text=m['text']))
 
         return "\n".join(ret)
@@ -39,7 +40,6 @@ class TextFormatter(FormatInterface):
 
     def format(self, report, settings):
         results = [
-            "Files:\n----------------------------",
             self._format_files(report, settings),
         ]
         return "\n".join(results)
@@ -68,7 +68,7 @@ class TextFormatter(FormatInterface):
         if settings.get('simplify'):
             arbiter = Arbiter()
             license_summary = arbiter.simplify_license(license_summary)['simplified']
-        return f'License:\n {license_summary}\n' # noqa: E231
+        return license_summary
 
     def format_copyright_summary(self, report, settings={}):
         copyright_summary = set()
