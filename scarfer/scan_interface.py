@@ -147,12 +147,18 @@ class ScancodeReportReader(ScanReportReader):
             _file['license'] = {}
             matches = []
             for le in f[self.licenses_value]:
-                vers = self.scancode_format[:3] 
-                if vers == "3.0" or vers == "3.2" or vers == "4.0"  or vers == "4.1":
+                vers = self.scancode_format[:3]
+                if vers == "3.0" or vers == "3.2":
                     for match in le['matches']:
                         matches.append({
                             "key": match['license_expression'],
                             "text": match['matched_text']
+                        })
+                if vers == "4.0" or vers == "4.1":
+                    for match in le['matches']:
+                        matches.append({
+                            "key": match['license_expression'],
+                            "text": match['matched_text_diagnostics']
                         })
                 else:
                     if 'key' in le and 'matched_text' in le:
