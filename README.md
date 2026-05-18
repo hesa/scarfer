@@ -1,3 +1,5 @@
+# We have moved to [codeberg](https://codeberg.org). Our new home: [codeberg.org/software-compliance-org/scarfer](https://codeberg.org/software-compliance-org/scarfer)
+
 # scarfer
 
 Source code scan report file reporter
